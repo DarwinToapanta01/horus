@@ -26,3 +26,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reports', [ReportController::class, 'store']);
     Route::post('/votes', [VoteController::class, 'store']);
 });
+
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
+});
