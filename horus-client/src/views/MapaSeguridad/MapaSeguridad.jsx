@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Circle, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import api from '../api/axios';
+import api from '../../api/axios';
 
-const MapaPrincipal = () => {
+const MapaSeguridad = () => {
     const [reportes, setReportes] = useState([]);
     // Coordenadas centrales de Santo Domingo de los Tsáchilas
     const centroStoDomingo = [-0.2530, -79.1754];
@@ -42,4 +42,4 @@ const MapaPrincipal = () => {
     );
 };
 
-export default MapaPrincipal;
+export default MapaSeguridad;

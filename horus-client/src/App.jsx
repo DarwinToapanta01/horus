@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './views/Login';
-import Registro from './views/Registro';
-import OlvidoPassword from './views/OlvidoPassword';
-import MenuPrincipal from './views/MenuPrincipal';
-import CambiarPassword from './views/CambiarPassword'; // No olvides crear este archivo
+import Login from './views/Login/Login';
+import Registro from './views/Registro/Registro';
+import OlvidoPassword from './views/OlvidoPassword/OlvidoPassword';
+import MenuPrincipal from './views/MenuPrincipal/MenuPrincipal';
+import CambiarPassword from './views/CambiarPassword/CambiarPassword'; // No olvides crear este archivo
 
 function App() {
   return (
