@@ -36,7 +36,7 @@ const MenuPrincipal = () => {
                         onClick={() => navigate('/cambiar-password')}
                         className="mt-1 text-xs font-bold text-orange-500 hover:text-orange-400 uppercase tracking-widest transition-colors"
                     >
-                        🔑 Ajustes de Seguridad
+                        🔑 Actualizar Contraseña
                     </button>
                 </div>
                 <button

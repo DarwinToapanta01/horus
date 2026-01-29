@@ -3,7 +3,8 @@ import Login from './views/Login/Login';
 import Registro from './views/Registro/Registro';
 import OlvidoPassword from './views/OlvidoPassword/OlvidoPassword';
 import MenuPrincipal from './views/MenuPrincipal/MenuPrincipal';
-import CambiarPassword from './views/CambiarPassword/CambiarPassword'; // No olvides crear este archivo
+import CambiarPassword from './views/CambiarPassword/CambiarPassword';
+import MapaSeguridad from './views/MapaSeguridad/MapaSeguridad';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         {/* Rutas Privadas (Después del Login) */}
         <Route path="/menu" element={<MenuPrincipal />} />
         <Route path="/cambiar-password" element={<CambiarPassword />} />
+        <Route path="/mapa" element={<MapaSeguridad />} />
 
         {/* Redirigir por defecto al login si la ruta no existe */}
         <Route path="*" element={<Navigate to="/login" />} />

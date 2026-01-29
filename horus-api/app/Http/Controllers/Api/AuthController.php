@@ -20,7 +20,7 @@ class AuthController extends Controller
             'last_name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed', // Valida que coincida con confirm_password
+            'password' => 'required|string|min:8|confirmed',
         ]);
 
         $user = User::create([
