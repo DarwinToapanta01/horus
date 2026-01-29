@@ -7,6 +7,8 @@ import CambiarPassword from './views/CambiarPassword/CambiarPassword';
 import MapaSeguridad from './views/MapaSeguridad/MapaSeguridad';
 import UbicarZona from './views/ReportarZona/UbicarZona';
 import ReportarZona from './views/ReportarZona/ReportarZona';
+import Votacion from './views/Votacion/VotacionLista';
+import Votacion from './views/Votacion/VotarZona';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Route path="/mapa" element={<MapaSeguridad />} />
         <Route path="/ubicar-zona" element={<UbicarZona />} />
         <Route path="/reportar-detalles" element={<ReportarZona />} />
+        <Route path="/votar" element={<Votacion />} />
+        <Route path="/votar/:id" element={<VotarZona />} />
         {/* Redirigir por defecto al login si la ruta no existe */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>

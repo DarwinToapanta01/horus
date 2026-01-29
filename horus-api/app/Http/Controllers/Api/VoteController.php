@@ -11,17 +11,17 @@ class VoteController extends Controller
 {
     public function store(Request $request)
     {
+        // Validamos pero quitamos user_id del request obligatorio, lo sacamos del Auth
         $request->validate([
             'report_id' => 'required|exists:reports,id',
-            'user_id'   => 'required|exists:users,id',
-            'type'      => 'required|boolean', // true = SI, false = NO
+            'type'      => 'required|boolean',
             'user_lat'  => 'required|numeric',
             'user_lng'  => 'required|numeric',
         ]);
 
         $report = Report::find($request->report_id);
+        $user = $request->user(); // Usuario autenticado
 
-        // --- Lógica de Cercanía (Máximo 20km para considerar "Misma Ciudad") ---
         $distance = $this->calculateDistance(
             $request->user_lat,
             $request->user_lng,
@@ -30,21 +30,15 @@ class VoteController extends Controller
         );
 
         if ($distance > 20) {
-            return response()->json([
-                'error' => 'Estás muy lejos. Solo puedes votar en reportes de tu propia ciudad.'
-            ], 403);
+            return response()->json(['error' => 'Estás muy lejos para validar este reporte.'], 403);
         }
 
-        // --- Guardar o actualizar el voto (evita duplicados) ---
         $vote = Vote::updateOrCreate(
-            ['report_id' => $request->report_id, 'user_id' => $request->user_id],
+            ['report_id' => $request->report_id, 'user_id' => $user->id],
             ['type' => $request->type]
         );
 
-        return response()->json([
-            'message' => 'Voto registrado con éxito',
-            'data' => $vote
-        ]);
+        return response()->json(['message' => 'Voto registrado', 'data' => $vote]);
     }
 
     // Fórmula de Haversine para calcular distancia en KM
