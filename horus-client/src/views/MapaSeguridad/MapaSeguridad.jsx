@@ -103,7 +103,7 @@ const MapaSeguridad = () => {
 
             {/* Botón flotante para reportar (Acción rápida) */}
             <button
-                onClick={() => navigate('/reportar')}
+                onClick={() => navigate('/ubicar-zona')}
                 className="absolute bottom-8 right-8 z-[1000] bg-blue-600 w-16 h-16 rounded-full shadow-2xl flex items-center justify-center text-2xl active:scale-95 transition-transform"
             >
                 🚨
