@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet'; // Añadimos Map para contexto
 import api from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
 
 const VotacionLista = () => {
     const [reportes, setReportes] = useState([]);
-    const [selectedReport, setSelectedReport] = useState(null); // Controla el Modal
+    const [selectedReport, setSelectedReport] = useState(null);
     const [voto, setVoto] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -18,18 +19,18 @@ const VotacionLista = () => {
             const res = await api.get('/reports');
             setReportes(res.data);
         } catch (err) {
-            console.error("Error al cargar reportes");
+            console.error("Error al obtener los reportes");
         }
     };
 
-    const getColor = (level) => {
+    const getColorClass = (level) => {
         if (level >= 70) return 'bg-red-500';
         if (level >= 40) return 'bg-orange-500';
         return 'bg-green-600';
     };
 
     const handleVotar = async () => {
-        if (voto === null) return alert("Selecciona SI o NO");
+        if (voto === null) return alert("Por favor, selecciona SI o NO");
         setLoading(true);
 
         navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -40,96 +41,111 @@ const VotacionLista = () => {
                     user_lat: pos.coords.latitude,
                     user_lng: pos.coords.longitude
                 });
-                alert("Voto registrado con éxito");
-                setSelectedReport(null); // Cerramos el modal
+                alert("¡Voto registrado!");
+                setSelectedReport(null);
                 setVoto(null);
-                fetchReportes(); // Actualizamos la lista
+                fetchReportes();
             } catch (err) {
-                alert(err.response?.data?.error || "Error al votar");
+                alert(err.response?.data?.error || "Error al procesar el voto");
             } finally {
                 setLoading(false);
             }
         }, () => {
-            alert("Ubicación necesaria para votar.");
+            alert("Es necesario activar el GPS para votar.");
             setLoading(false);
         });
     };
 
     return (
-        <div className="min-h-screen bg-[#0f1216] text-white p-6 flex flex-col items-center overflow-x-hidden">
-            <h1 className="text-3xl font-black italic mb-2">HORUS</h1>
-            <h2 className="text-slate-400 uppercase tracking-widest text-sm font-bold mb-8 text-center">
-                Votación de zona
-            </h2>
+        <div className="min-h-screen bg-[#0f1216] text-white flex flex-col items-center p-6 relative">
+            <h1 className="text-4xl font-black italic mb-1 tracking-tighter">HORUS</h1>
+            <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.3em] mb-10">Votación de zona</p>
 
-            {/* LISTA DE ZONAS */}
-            <div className="w-full max-w-sm space-y-4">
+            <div className="w-full max-w-sm space-y-4 overflow-y-auto pb-20">
                 {reportes.map((r, index) => (
                     <div
                         key={r.id}
                         onClick={() => setSelectedReport(r)}
-                        className="bg-[#1a1f26] rounded-xl overflow-hidden cursor-pointer active:scale-95 transition-all shadow-lg border border-white/5"
+                        className="bg-[#1a1f26] rounded-xl overflow-hidden shadow-lg border border-white/5 cursor-pointer active:scale-[0.98] transition-all"
                     >
-                        <div className={`p-3 font-bold ${getColor(r.danger_level)} text-slate-900`}>
-                            Zona {index + 1}
+                        <div className={`p-3 font-black text-slate-900 uppercase text-xs ${getColorClass(r.danger_level)}`}>
+                            Zona Reportada #{r.id}
                         </div>
-                        <div className="p-4 h-6 bg-[#242933]"></div>
+                        <div className="p-4 bg-[#242933]/50 flex justify-between items-center text-[10px] text-slate-400">
+                            <span>Nivel: {r.danger_level}%</span>
+                            <span>Click para ver ubicación</span>
+                        </div>
                     </div>
                 ))}
             </div>
 
-            {/* MODAL DE VOTACIÓN (Condicional) */}
+            {/* MODAL CON MAPA DE CONTEXTO */}
             {selectedReport && (
-                <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm">
-                    <div className="bg-[#1a1f26] w-full max-w-xs rounded-2xl shadow-2xl overflow-hidden border border-slate-700 animate-in fade-in zoom-in duration-200">
-                        {/* Header del Modal con el color de la zona */}
-                        <div className={`p-4 text-center font-bold text-slate-900 ${getColor(selectedReport.danger_level)} uppercase text-xs truncate px-2`}>
-                            {selectedReport.description.substring(0, 30)}...
+                <div className="fixed inset-0 z-[2000] bg-[#0f1216]/95 backdrop-blur-md flex items-center justify-center p-4">
+                    <div className="bg-[#1a1f26] w-full max-w-sm rounded-3xl shadow-2xl border border-slate-700 overflow-hidden flex flex-col">
+
+                        {/* 1. Mapa de Referencia (Para que el usuario sepa dónde es) */}
+                        <div className="h-48 w-full relative border-b border-slate-700">
+                            <MapContainer
+                                center={[selectedReport.latitude, selectedReport.longitude]}
+                                zoom={16}
+                                zoomControl={false}
+                                dragging={false}
+                                touchZoom={false}
+                                scrollWheelZoom={false}
+                                className="h-full w-full"
+                            >
+                                <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+                                <Marker position={[selectedReport.latitude, selectedReport.longitude]} />
+                            </MapContainer>
+                            <div className="absolute top-2 right-2 bg-black/60 px-2 py-1 rounded text-[9px] uppercase font-bold text-white z-[1001]">
+                                Ubicación del incidente
+                            </div>
                         </div>
 
-                        <div className="p-6 flex flex-col items-center">
-                            <p className="text-slate-400 text-sm mb-8 text-center">
-                                Reportada con un porcentaje de {selectedReport.danger_level}%
+                        <div className="p-6 flex flex-col items-center text-center">
+                            <h3 className="text-white font-black uppercase text-sm mb-2 tracking-tighter">¿Confirmas el nivel de riesgo?</h3>
+                            <p className="text-slate-400 text-[11px] mb-6">
+                                Evalúa según tu conocimiento de esta calle/sector.
                             </p>
 
-                            <div className="flex justify-around w-full mb-8">
-                                <label className="flex flex-col items-center gap-2 cursor-pointer group">
-                                    <input type="radio" name="voto" onChange={() => setVoto(true)} className="hidden" />
-                                    <div className={`w-12 h-12 rounded-full border-4 border-slate-600 flex items-center justify-center transition-all ${voto === true ? 'bg-blue-500 border-white scale-110' : ''}`}>
-                                        <span className="text-[10px] font-bold">SI</span>
+                            {/* Opciones SI / NO */}
+                            <div className="flex justify-center gap-10 mb-8">
+                                <label className="flex flex-col items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="vote" className="hidden" onChange={() => setVoto(true)} />
+                                    <div className={`w-14 h-14 rounded-full border-4 border-slate-600 flex items-center justify-center transition-all ${voto === true ? 'bg-blue-600 border-white scale-110' : ''}`}>
+                                        <span className="text-[10px] font-black">SÍ</span>
                                     </div>
+                                    <span className="text-[9px] font-bold text-slate-500 uppercase">Es real</span>
                                 </label>
-                                <label className="flex flex-col items-center gap-2 cursor-pointer group">
-                                    <input type="radio" name="voto" onChange={() => setVoto(false)} className="hidden" />
-                                    <div className={`w-12 h-12 rounded-full border-4 border-slate-600 flex items-center justify-center transition-all ${voto === false ? 'bg-slate-400 border-white scale-110' : ''}`}>
-                                        <span className="text-[10px] font-bold text-slate-900">NO</span>
+                                <label className="flex flex-col items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="vote" className="hidden" onChange={() => setVoto(false)} />
+                                    <div className={`w-14 h-14 rounded-full border-4 border-slate-600 flex items-center justify-center transition-all ${voto === false ? 'bg-slate-500 border-white scale-110' : ''}`}>
+                                        <span className="text-[10px] font-black text-slate-900">NO</span>
                                     </div>
+                                    <span className="text-[9px] font-bold text-slate-500 uppercase">Es falso</span>
                                 </label>
                             </div>
 
-                            <div className="flex flex-col gap-2 w-full">
+                            <div className="w-full space-y-3">
                                 <button
                                     onClick={handleVotar}
                                     disabled={loading}
-                                    className="w-full bg-[#4a7ec2] hover:bg-blue-600 py-3 rounded-lg font-bold text-sm transition-all shadow-lg active:scale-95"
+                                    className="w-full bg-[#3b82f6] text-white font-black py-4 rounded-2xl text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all"
                                 >
-                                    {loading ? 'Procesando...' : 'Votar'}
+                                    {loading ? 'Procesando...' : 'Confirmar Voto'}
                                 </button>
                                 <button
-                                    onClick={() => setSelectedReport(null)}
-                                    className="w-full py-2 text-slate-500 text-xs font-bold uppercase tracking-widest"
+                                    onClick={() => { setSelectedReport(null); setVoto(null); }}
+                                    className="w-full text-slate-500 text-[10px] font-bold uppercase py-2"
                                 >
-                                    Cancelar
+                                    Cerrar
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
-
-            <div className="mt-auto py-8">
-                <img src="/logo-ojo.png" alt="Horus" className="w-16 opacity-20 grayscale invert" />
-            </div>
         </div>
     );
 };

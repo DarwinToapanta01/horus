@@ -8,9 +8,10 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Obtenemos los reportes con sus contadores de votos
+        $user = $request->user();
+
         $reports = Report::withCount([
             'votes as confirms' => function ($query) {
                 $query->where('type', true);
@@ -20,9 +21,15 @@ class ReportController extends Controller
             }
         ])
             ->where('status', 'active')
-            ->get();
+            ->get()
+            ->map(function ($report) use ($user) {
+                // Solo intentamos ver si votó si el usuario existe (está logueado)
+                $report->user_has_voted = $user
+                    ? $report->votes()->where('user_id', $user->id)->exists()
+                    : false;
+                return $report;
+            });
 
-        // RETORNAMOS la variable que procesamos
         return response()->json($reports);
     }
 
