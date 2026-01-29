@@ -31,8 +31,8 @@ class ReportController extends Controller
         $validated = $request->validate([
             'latitude'     => 'required|numeric',
             'longitude'    => 'required|numeric',
-            'radius'       => 'required|integer|min:3000|max:5000',
-            'danger_level' => 'required|integer|in:0,50,100',
+            'radius'       => 'required|integer|min:100|max:5000',
+            'danger_level' => 'required|integer|min:0|max:100',
             'description'  => 'required|string|max:500',
         ]);
 

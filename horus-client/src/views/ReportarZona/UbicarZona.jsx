@@ -66,7 +66,7 @@ const UbicarZona = () => {
 
                     {/* Input Slider Invisible sobre la barra */}
                     <input
-                        type="range" min="0" max="100" value={dangerLevel}
+                        type="range" min="0" max="100" step="10" value={dangerLevel}
                         onChange={(e) => setDangerLevel(parseInt(e.target.value))}
                         className="absolute top-0 w-full h-full opacity-0 cursor-pointer z-20"
                     />
