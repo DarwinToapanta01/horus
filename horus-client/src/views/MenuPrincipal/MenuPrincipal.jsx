@@ -18,7 +18,7 @@ const MenuPrincipal = () => {
     const menuOptions = [
         { title: 'Mapa de Seguridad', icon: '🗺️', path: '/mapa', desc: 'Zonas en tiempo real', color: 'from-blue-500/20' },
         { title: 'Reportar Zona', icon: '🚨', path: '/ubicar-zona', desc: 'Alertar a la comunidad', color: 'from-red-500/20' },
-        { title: 'Opiniones', icon: '💬', path: '/opiniones', desc: 'Debates ciudadanos', color: 'from-emerald-500/20' },
+        { title: 'Comentarios', icon: '💬', path: '/lista-comentarios', desc: 'Debates ciudadanos', color: 'from-emerald-500/20' },
         { title: 'Votar Reportes', icon: '🗳️', path: '/votacion-lista', desc: 'Validar alertas', color: 'from-purple-500/20' },
     ];
 

@@ -35,21 +35,18 @@ const MapaSeguridad = () => {
     }, []);
 
     const getColor = (level) => {
-        if (level >= 70) return '#ef4444'; // Rojo (Alto)
-        if (level >= 40) return '#f59e0b'; // Naranja (Medio)
-        return '#10b981'; // Verde (Bajo)
+        if (level >= 70) return '#ef4444';
+        if (level >= 40) return '#f59e0b';
+        return '#10b981';
     };
 
     return (
-        <div className="h-screen w-full flex flex-col bg-slate-900">
+        <div className="h-screen w-full flex flex-col bg-slate-900 relative">
             {/* Header Flotante */}
             <div className="absolute top-4 left-0 right-0 z-[1000] px-4">
                 <div className="bg-slate-900/80 backdrop-blur-md border border-white/10 p-4 rounded-2xl shadow-2xl flex justify-between items-center">
-                    <button onClick={() => navigate('/menu')} className="text-white bg-white/10 p-2 rounded-lg">
-                        ⬅️
-                    </button>
                     <h2 className="text-white font-black text-xs uppercase tracking-[0.2em]">Mapa de Vigilancia</h2>
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-[10px] font-bold">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-[10px] font-bold text-white">
                         {reportes.length}
                     </div>
                 </div>
@@ -68,10 +65,8 @@ const MapaSeguridad = () => {
 
                     {reportes
                         .filter((reporte) => {
-                            // REGLA: Se muestra si (tiene 3+ SI) O si (es nuevo y no ha expirado)
                             const isVerified = (reporte.confirms || 0) >= 3;
-                            const isExpired = reporte.is_expired; // Viene del backend
-
+                            const isExpired = reporte.is_expired;
                             return isVerified || !isExpired;
                         })
                         .map((reporte) => {
@@ -82,9 +77,8 @@ const MapaSeguridad = () => {
                                     <Marker position={[reporte.latitude, reporte.longitude]}>
                                         <Popup>
                                             <div className="p-2 min-w-[150px]">
-                                                {/* Mostrar fecha también en el popup */}
-                                                <p className="text-[8px] text-slate-400 font-bold mb-1 italic">
-                                                    REGISTRADO: {reporte.formatted_date}
+                                                <p className="text-[8px] text-slate-400 font-bold mb-1 italic uppercase">
+                                                    📅 {reporte.formatted_date}
                                                 </p>
 
                                                 <h3 className="font-bold border-b border-gray-200 mb-1 uppercase text-[10px] text-slate-500">
@@ -92,24 +86,36 @@ const MapaSeguridad = () => {
                                                 </h3>
 
                                                 {isVerified ? (
-                                                    <p className="text-sm text-gray-700 mb-2 font-medium">{reporte.description}</p>
+                                                    <>
+                                                        <p className="text-sm text-gray-700 mb-2 font-medium leading-tight">
+                                                            {reporte.description}
+                                                        </p>
+                                                        {/* BOTÓN DE COMENTARIOS: Solo aparece si está verificado */}
+                                                        <button
+                                                            onClick={() => navigate(`/reporte/${reporte.id}/comentarios`)}
+                                                            className="w-full mt-3 bg-blue-600 text-white text-[9px] py-2 rounded uppercase font-black shadow-lg shadow-blue-500/30 active:scale-95 transition-all"
+                                                        >
+                                                            Ver Muro de Comentarios 💬
+                                                        </button>
+                                                    </>
                                                 ) : (
-                                                    <p className="text-[11px] text-orange-600 italic mb-2 bg-orange-50 p-1 rounded">
-                                                        Detalles bloqueados. Requiere {3 - (reporte.confirms || 0)} votos "SÍ" para ser público.
-                                                    </p>
+                                                    <>
+                                                        <p className="text-[11px] text-orange-600 italic mb-2 bg-orange-50 p-2 rounded border border-orange-100">
+                                                            Requiere {3 - (reporte.confirms || 0)} votos más para ver detalles.
+                                                        </p>
+                                                        <button
+                                                            onClick={() => navigate('/votacion-lista')}
+                                                            className="w-full mt-3 bg-slate-800 text-white text-[9px] py-2 rounded uppercase font-black"
+                                                        >
+                                                            Validar esta zona 🗳️
+                                                        </button>
+                                                    </>
                                                 )}
 
-                                                <div className="flex justify-between text-[10px] font-bold uppercase mt-2">
+                                                <div className="flex justify-between text-[9px] font-black uppercase mt-3 pt-2 border-t border-gray-100">
                                                     <span className="text-green-600">SÍ: {reporte.confirms || 0}</span>
                                                     <span className="text-red-600">NO: {reporte.rejects || 0}</span>
                                                 </div>
-
-                                                <button
-                                                    onClick={() => navigate('/votacion-lista')}
-                                                    className="w-full mt-3 bg-slate-800 text-white text-[9px] py-1 rounded uppercase font-black"
-                                                >
-                                                    Validar esta zona
-                                                </button>
                                             </div>
                                         </Popup>
                                     </Marker>
@@ -121,7 +127,6 @@ const MapaSeguridad = () => {
                                             fillColor: getColor(reporte.danger_level),
                                             color: getColor(reporte.danger_level),
                                             weight: 1,
-                                            // Si está verificado brilla más, si no, es casi transparente
                                             opacity: isVerified ? 0.8 : 0.2,
                                             fillOpacity: isVerified ? 0.2 : 0.05
                                         }}
@@ -132,9 +137,10 @@ const MapaSeguridad = () => {
                 </MapContainer>
             )}
 
+            {/* BOTÓN FLOTANTE ÚNICO: Para crear nuevo reporte */}
             <button
                 onClick={() => navigate('/ubicar-zona')}
-                className="absolute bottom-8 right-8 z-[1000] bg-blue-600 w-16 h-16 rounded-full shadow-2xl flex items-center justify-center text-2xl active:scale-95 transition-transform"
+                className="absolute bottom-8 right-8 z-[1000] bg-red-600 hover:bg-red-700 text-white w-16 h-16 rounded-full shadow-[0_0_20px_rgba(220,38,38,0.5)] flex items-center justify-center text-2xl active:scale-90 transition-all border-4 border-white/10"
             >
                 🚨
             </button>
