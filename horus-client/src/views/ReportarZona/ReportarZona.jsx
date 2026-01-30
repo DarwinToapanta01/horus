@@ -18,7 +18,7 @@ const ReportarZona = () => {
                 longitude: state.position[1],
                 description: comentario,
                 danger_level: state.dangerLevel,
-                radius: 500 // Valor base
+                radius: 500
             });
             alert('¡Reporte enviado exitosamente!');
             navigate('/mapa');
