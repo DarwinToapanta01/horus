@@ -61,4 +61,28 @@ class ReportController extends Controller
             'data'    => $report
         ], 201);
     }
+
+    public function show($id)
+    {
+        try {
+            // Buscamos el reporte con sus conteos de votos
+            $report = Report::withCount([
+                'votes as confirms' => function ($query) {
+                    $query->where('type', true);
+                },
+                'votes as rejects' => function ($query) {
+                    $query->where('type', false);
+                }
+            ])->find($id);
+
+            if (!$report) {
+                return response()->json(['message' => 'Reporte no encontrado'], 404);
+            }
+
+            return response()->json($report);
+        } catch (\Exception $e) {
+            // Esto nos ayudará a ver el error real en los logs de Laravel si falla
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }
