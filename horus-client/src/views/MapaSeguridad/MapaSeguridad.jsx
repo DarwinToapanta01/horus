@@ -66,58 +66,69 @@ const MapaSeguridad = () => {
                         attribution='&copy; CARTO'
                     />
 
-                    {reportes.map((reporte) => {
-                        // REGLA: Solo mostrar visualmente si tiene al menos 1 confirmación
-                        // O si el usuario quiere ver "todo", podrías quitar este if.
-                        const isVerified = (reporte.confirms || 0) >= 3;
+                    {reportes
+                        .filter((reporte) => {
+                            // REGLA: Se muestra si (tiene 3+ SI) O si (es nuevo y no ha expirado)
+                            const isVerified = (reporte.confirms || 0) >= 3;
+                            const isExpired = reporte.is_expired; // Viene del backend
 
-                        return (
-                            <React.Fragment key={reporte.id}>
-                                <Marker position={[reporte.latitude, reporte.longitude]}>
-                                    <Popup>
-                                        <div className="p-2 min-w-[150px]">
-                                            <h3 className="font-bold border-b border-gray-200 mb-1 uppercase text-[10px] text-slate-500">
-                                                Estado: {isVerified ? '✅ Verificado' : '⏳ Pendiente'}
-                                            </h3>
+                            return isVerified || !isExpired;
+                        })
+                        .map((reporte) => {
+                            const isVerified = (reporte.confirms || 0) >= 3;
 
-                                            {/* Si no está verificado, ocultamos el comentario detallado */}
-                                            {isVerified ? (
-                                                <p className="text-sm text-gray-700 mb-2 font-medium">{reporte.description}</p>
-                                            ) : (
-                                                <p className="text-[11px] text-orange-600 italic mb-2 bg-orange-50 p-1 rounded">
-                                                    Detalles bloqueados. Requiere {3 - (reporte.confirms || 0)} votos más para ser público.
+                            return (
+                                <React.Fragment key={reporte.id}>
+                                    <Marker position={[reporte.latitude, reporte.longitude]}>
+                                        <Popup>
+                                            <div className="p-2 min-w-[150px]">
+                                                {/* Mostrar fecha también en el popup */}
+                                                <p className="text-[8px] text-slate-400 font-bold mb-1 italic">
+                                                    REGISTRADO: {reporte.formatted_date}
                                                 </p>
-                                            )}
 
-                                            <div className="flex justify-between text-[10px] font-bold uppercase mt-2">
-                                                <span className="text-green-600">Confirma: {reporte.confirms || 0}</span>
-                                                <span className="text-red-600">Rechaza: {reporte.rejects || 0}</span>
+                                                <h3 className="font-bold border-b border-gray-200 mb-1 uppercase text-[10px] text-slate-500">
+                                                    Estado: {isVerified ? '✅ Verificado' : '⏳ En Validación'}
+                                                </h3>
+
+                                                {isVerified ? (
+                                                    <p className="text-sm text-gray-700 mb-2 font-medium">{reporte.description}</p>
+                                                ) : (
+                                                    <p className="text-[11px] text-orange-600 italic mb-2 bg-orange-50 p-1 rounded">
+                                                        Detalles bloqueados. Requiere {3 - (reporte.confirms || 0)} votos "SÍ" para ser público.
+                                                    </p>
+                                                )}
+
+                                                <div className="flex justify-between text-[10px] font-bold uppercase mt-2">
+                                                    <span className="text-green-600">SÍ: {reporte.confirms || 0}</span>
+                                                    <span className="text-red-600">NO: {reporte.rejects || 0}</span>
+                                                </div>
+
+                                                <button
+                                                    onClick={() => navigate('/votacion-lista')}
+                                                    className="w-full mt-3 bg-slate-800 text-white text-[9px] py-1 rounded uppercase font-black"
+                                                >
+                                                    Validar esta zona
+                                                </button>
                                             </div>
+                                        </Popup>
+                                    </Marker>
 
-                                            <button
-                                                onClick={() => navigate('/votacion-lista')}
-                                                className="w-full mt-3 bg-slate-800 text-white text-[9px] py-1 rounded uppercase font-black"
-                                            >
-                                                Ir a votar
-                                            </button>
-                                        </div>
-                                    </Popup>
-                                </Marker>
-
-                                <Circle
-                                    center={[reporte.latitude, reporte.longitude]}
-                                    radius={reporte.radius || 200}
-                                    pathOptions={{
-                                        fillColor: getColor(reporte.danger_level),
-                                        color: getColor(reporte.danger_level),
-                                        weight: 1,
-                                        opacity: isVerified ? 0.8 : 0.3, // Menos opaco si no está verificado
-                                        fillOpacity: isVerified ? 0.2 : 0.05
-                                    }}
-                                />
-                            </React.Fragment>
-                        );
-                    })}
+                                    <Circle
+                                        center={[reporte.latitude, reporte.longitude]}
+                                        radius={reporte.radius || 200}
+                                        pathOptions={{
+                                            fillColor: getColor(reporte.danger_level),
+                                            color: getColor(reporte.danger_level),
+                                            weight: 1,
+                                            // Si está verificado brilla más, si no, es casi transparente
+                                            opacity: isVerified ? 0.8 : 0.2,
+                                            fillOpacity: isVerified ? 0.2 : 0.05
+                                        }}
+                                    />
+                                </React.Fragment>
+                            );
+                        })}
                 </MapContainer>
             )}
 

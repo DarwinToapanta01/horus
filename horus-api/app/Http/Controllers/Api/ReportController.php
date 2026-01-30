@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Report;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ReportController extends Controller
 {
@@ -23,13 +24,19 @@ class ReportController extends Controller
             ->where('status', 'active')
             ->get()
             ->map(function ($report) use ($user) {
-                // Solo intentamos ver si votó si el usuario existe (está logueado)
+                $createdAt = Carbon::parse($report->created_at);
+
+                //Calculamos si ya pasaron 48 horas
+                $report->is_expired = $createdAt->diffInHours(Carbon::now()) >= 48;
+                $report->formatted_date = $createdAt->format('d/m/Y H:i');
                 $report->user_has_voted = $user
                     ? $report->votes()->where('user_id', $user->id)->exists()
                     : false;
+
                 return $report;
             });
 
+        // Solo enviar reportes que NO hayan expirado y que aún no tengan suficientes votos
         return response()->json($reports);
     }
 
