@@ -29,7 +29,7 @@ function App() {
         <Route path="/lista-comentarios" element={<ListaComentarios />} />
         <Route path="/reporte/:id/comentarios" element={<Comentarios />} />
 
-        {/* Usamos una sola ruta para la votación, el modal se maneja internamente */}
+        {/* Ruta para la votación */}
         <Route path="/votacion-lista" element={<VotacionLista />} />
 
         {/* Redirigir por defecto */}

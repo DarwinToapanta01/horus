@@ -14,12 +14,12 @@ export default defineConfig({
         theme_color: '#0f1216',
         icons: [
           {
-            src: 'icon-Horus192.png', // Debes tener esta imagen en la carpeta public
+            src: 'icon-Horus192.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'icon-Horus512.png', // Debes tener esta imagen en la carpeta public
+            src: 'icon-Horus512.png',
             sizes: '512x512',
             type: 'image/png'
           }
