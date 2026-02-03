@@ -9,6 +9,12 @@ const LocationMarker = ({ position, setPosition }) => {
     return position ? <Marker position={position} /> : null;
 };
 
+const ChangeView = ({ center }) => {
+    const map = useMapEvents({});
+    map.setView(center, map.getZoom());
+    return null;
+};
+
 const UbicarZona = () => {
     const navigate = useNavigate();
     const [position, setPosition] = useState([-0.2520, -79.1716]);
@@ -27,9 +33,21 @@ const UbicarZona = () => {
     };
 
     const handleMyLocation = () => {
-        navigator.geolocation.getCurrentPosition((pos) => {
-            setPosition([pos.coords.latitude, pos.coords.longitude]);
-        });
+        if (!navigator.geolocation) {
+            alert("Tu navegador no soporta geolocalización");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const { latitude, longitude } = pos.coords;
+                setPosition([latitude, longitude]); // Esto actualiza el estado
+            },
+            (error) => {
+                alert("Error al obtener ubicación: " + error.message);
+            },
+            { enableHighAccuracy: true }
+        );
     };
 
     return (
@@ -49,6 +67,10 @@ const UbicarZona = () => {
             <div className="w-full h-64 rounded-xl overflow-hidden border border-slate-700 mb-8 relative">
                 <MapContainer center={position} zoom={15} className="h-full w-full">
                     <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
+
+                    {/* ESTA ES LA PIEZA CLAVE QUE TE FALTA EN EL JSX: */}
+                    <ChangeView center={position} />
+
                     <LocationMarker position={position} setPosition={setPosition} />
                 </MapContainer>
             </div>
