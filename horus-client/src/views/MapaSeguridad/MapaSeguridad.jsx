@@ -100,16 +100,15 @@ const MapaSeguridad = () => {
                             return (
                                 <React.Fragment key={reporte.id}>
                                     <Marker position={[reporte.latitude, reporte.longitude]}>
-                                        <Popup className="custom-popup">
-                                            <div className="p-4 min-w-[200px] max-w-[240px] bg-slate-900 rounded-2xl border border-white/10">
+                                        <Popup>
+                                            <div className="p-4 min-w-[200px] max-w-[240px] font-sans antialiased bg-slate-900 rounded-2xl">
                                                 {/* Cabecera con Fecha y Badge de Estado */}
                                                 <div className="flex flex-col gap-2 mb-4">
                                                     <span className="text-[10px] text-slate-400 font-bold tracking-wider flex items-center gap-1.5">
-                                                        <span className="text-xs">📅</span>
-                                                        {reporte.formatted_date}
+                                                        <span className="text-xs">📅</span> {reporte.formatted_date}
                                                     </span>
 
-                                                    <div className={`text-[9px] w-fit px-2.5 py-1 rounded-full font-bold uppercase tracking-tight border ${isVerified
+                                                    <div className={`text-[9px] w-fit px-2.5 py-1 rounded-full font-bold uppercase tracking-wide border ${isVerified
                                                             ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
                                                             : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
                                                         }`}>
@@ -125,10 +124,9 @@ const MapaSeguridad = () => {
                                                         </p>
                                                         <button
                                                             onClick={() => navigate(`/reporte/${reporte.id}/comentarios`)}
-                                                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-[10px] py-2.5 rounded-xl uppercase font-bold tracking-wide shadow-lg shadow-blue-900/30 transition-all flex items-center justify-center gap-2 group"
+                                                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-[10px] py-2.5 rounded-xl uppercase font-bold shadow-lg shadow-blue-900/30 transition-all active:scale-95 flex items-center justify-center gap-2 group"
                                                         >
-                                                            <span>💬</span>
-                                                            <span>Ver Muro</span>
+                                                            Ver Muro 💬
                                                             <span className="group-hover:translate-x-1 transition-transform">→</span>
                                                         </button>
                                                     </div>
@@ -136,15 +134,14 @@ const MapaSeguridad = () => {
                                                     <div className="space-y-3">
                                                         <div className="bg-amber-500/10 border-l-4 border-amber-500 p-3 rounded-r-xl">
                                                             <p className="text-[11px] text-amber-300 leading-tight font-medium">
-                                                                Contenido bloqueado. Faltan <span className="font-black text-amber-400">{3 - (reporte.confirms || 0)} votos</span> para liberar.
+                                                                Contenido bloqueado. Faltan <span className="font-black text-amber-400">{3 - (reporte.confirms || 0)} votos</span> para liberar la información.
                                                             </p>
                                                         </div>
                                                         <button
                                                             onClick={() => navigate('/votacion-lista')}
-                                                            className="w-full bg-slate-800 hover:bg-slate-700 text-white text-[10px] py-2.5 rounded-xl uppercase font-bold tracking-wide transition-all active:scale-95 flex items-center justify-center gap-2"
+                                                            className="w-full bg-slate-800 hover:bg-slate-700 text-white text-[10px] py-2.5 rounded-xl uppercase font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
                                                         >
-                                                            <span>🗳️</span>
-                                                            <span>Validar Zona</span>
+                                                            Validar Zona 🗳️
                                                         </button>
                                                     </div>
                                                 )}
@@ -158,16 +155,12 @@ const MapaSeguridad = () => {
                                                     {/* Barra de progreso visual */}
                                                     <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden flex">
                                                         <div
-                                                            className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 transition-all"
-                                                            style={{
-                                                                width: `${(reporte.confirms / ((reporte.confirms || 0) + (reporte.rejects || 0) || 1)) * 100}%`
-                                                            }}
+                                                            className="h-full bg-emerald-500 transition-all"
+                                                            style={{ width: `${(reporte.confirms / (reporte.confirms + reporte.rejects || 1)) * 100}%` }}
                                                         />
                                                         <div
-                                                            className="h-full bg-gradient-to-r from-red-500 to-red-400 transition-all"
-                                                            style={{
-                                                                width: `${(reporte.rejects / ((reporte.confirms || 0) + (reporte.rejects || 0) || 1)) * 100}%`
-                                                            }}
+                                                            className="h-full bg-red-500 transition-all"
+                                                            style={{ width: `${(reporte.rejects / (reporte.confirms + reporte.rejects || 1)) * 100}%` }}
                                                         />
                                                     </div>
                                                 </div>
