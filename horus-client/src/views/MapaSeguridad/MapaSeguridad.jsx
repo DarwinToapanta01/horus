@@ -5,7 +5,6 @@ import 'leaflet/dist/leaflet.css';
 import api from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
 
-// Corregir los iconos por defecto de Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -109,8 +108,8 @@ const MapaSeguridad = () => {
                                                     </span>
 
                                                     <div className={`text-[9px] w-fit px-2.5 py-1 rounded-full font-bold uppercase tracking-wide border ${isVerified
-                                                            ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-                                                            : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                                        ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                                                        : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
                                                         }`}>
                                                         {isVerified ? '● Verificado' : '○ En Validación'}
                                                     </div>

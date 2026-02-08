@@ -56,7 +56,7 @@ const Comentarios = () => {
 
     return (
         <div className="min-h-screen bg-slate-900 text-white flex flex-col">
-            {/* Cabecera con Mapa (SIN obstáculos) */}
+            {/* Cabecera con Mapa */}
             <div className="h-64 w-full relative">
                 <MapContainer
                     center={[reporte.latitude, reporte.longitude]}

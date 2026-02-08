@@ -19,16 +19,22 @@ const UbicarZona = () => {
     const navigate = useNavigate();
     const [position, setPosition] = useState([-0.2520, -79.1716]);
     const [dangerLevel, setDangerLevel] = useState(10);
+    const [loadingLocation, setLoadingLocation] = useState(false);
 
     // Lógica de colores para el slider
     const getSliderColor = () => {
         if (dangerLevel >= 70) return 'bg-red-500';
-        if (dangerLevel >= 40) return 'bg-orange-500';
-        return 'bg-green-500';
+        if (dangerLevel >= 40) return 'bg-amber-500';
+        return 'bg-emerald-500';
+    };
+
+    const getLevelText = () => {
+        if (dangerLevel >= 70) return 'Alto Riesgo';
+        if (dangerLevel >= 40) return 'Riesgo Moderado';
+        return 'Bajo Riesgo';
     };
 
     const handleNext = () => {
-        // Pasamos los datos al siguiente paso mediante el estado de navegación
         navigate('/reportar-detalles', { state: { position, dangerLevel } });
     };
 
@@ -38,89 +44,158 @@ const UbicarZona = () => {
             return;
         }
 
+        setLoadingLocation(true);
         navigator.geolocation.getCurrentPosition(
             (pos) => {
                 const { latitude, longitude } = pos.coords;
-                setPosition([latitude, longitude]); // Esto actualiza el estado
+                setPosition([latitude, longitude]);
+                setLoadingLocation(false);
             },
             (error) => {
                 alert("Error al obtener ubicación: " + error.message);
+                setLoadingLocation(false);
             },
             { enableHighAccuracy: true }
         );
     };
 
     return (
-        <div className="min-h-screen bg-[#0f1216] text-white flex flex-col p-6 items-center">
-            <h1 className="text-4xl font-black mb-2 tracking-tighter italic">HORUS</h1>
-            <h2 className="text-slate-400 text-lg mb-6 uppercase tracking-widest font-bold">Reportar Zona Segura</h2>
+        <div className="min-h-screen bg-slate-900 text-white px-6 py-8 relative overflow-hidden">
+            {/* Luces de fondo con tonos rojo (alerta) */}
+            <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-red-600 rounded-full blur-[120px] opacity-20"></div>
+            <div className="absolute bottom-[-10%] left-[-10%] w-64 h-64 bg-orange-600 rounded-full blur-[120px] opacity-15"></div>
 
-            {/* Botón Mi Ubicación */}
-            <button
-                onClick={handleMyLocation}
-                className="mb-4 bg-blue-600/20 p-3 rounded-full border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.5)]"
-            >
-                📍
-            </button>
+            {/* Header */}
+            <header className="relative z-10 mb-8">
+                <button
+                    onClick={() => navigate('/menu')}
+                    className="mb-4 text-slate-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-semibold uppercase tracking-wider"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                    </svg>
+                    Volver
+                </button>
 
-            {/* Mapa */}
-            <div className="w-full h-64 rounded-xl overflow-hidden border border-slate-700 mb-8 relative">
-                <MapContainer center={position} zoom={15} className="h-full w-full">
-                    <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
-
-                    {/* ESTA ES LA PIEZA CLAVE QUE TE FALTA EN EL JSX: */}
-                    <ChangeView center={position} />
-
-                    <LocationMarker position={position} setPosition={setPosition} />
-                </MapContainer>
-            </div>
-
-            {/* Slider Dinámico */}
-            <div className="w-full max-w-sm flex flex-col items-center">
-                <p className="text-slate-300 uppercase font-bold text-sm mb-8">Selecciona el nivel de riesgo</p>
-
-                <div className="relative w-full h-4 bg-slate-800 rounded-full mb-12">
-                    {/* Barra de progreso coloreada */}
-                    <div
-                        className={`absolute top-0 left-0 h-full rounded-full transition-colors duration-300 ${getSliderColor()}`}
-                        style={{ width: `${dangerLevel}%` }}
-                    ></div>
-
-                    {/* Input Slider Invisible sobre la barra */}
-                    <input
-                        type="range" min="0" max="100" step="10" value={dangerLevel}
-                        onChange={(e) => setDangerLevel(parseInt(e.target.value))}
-                        className="absolute top-0 w-full h-full opacity-0 cursor-pointer z-20"
-                    />
-
-                    {/* Indicador (Tooltip) Flotante */}
-                    <div
-                        className={`absolute -top-10 flex flex-col items-center transition-all duration-150`}
-                        style={{ left: `calc(${dangerLevel}% - 20px)` }}
-                    >
-                        <div className={`${getSliderColor()} text-[10px] font-bold px-2 py-1 rounded-md mb-[-2px]`}>
-                            {dangerLevel}%
-                        </div>
-                        <div className={`w-3 h-3 ${getSliderColor()} rotate-45`}></div>
+                <div className="flex items-center gap-3">
+                    <div className="p-3 bg-red-500/10 rounded-2xl border border-red-500/20">
+                        <span className="text-3xl">🚨</span>
                     </div>
+                    <div>
+                        <h1 className="text-3xl font-black tracking-tight uppercase">Reportar Zona</h1>
+                        <p className="text-slate-400 text-sm font-medium mt-1">Alerta a la comunidad sobre incidentes</p>
+                    </div>
+                </div>
+            </header>
 
-                    {/* El círculo blanco del slider */}
-                    <div
-                        className="absolute top-1/2 -translate-y-1/2 w-6 h-6 bg-white border-4 border-slate-900 rounded-full pointer-events-none shadow-lg z-10"
-                        style={{ left: `calc(${dangerLevel}% - 12px)` }}
-                    ></div>
+            {/* Contenedor principal */}
+            <div className="relative z-10 space-y-6">
+                {/* Botón Mi Ubicación */}
+                <div className="flex justify-center">
+                    <button
+                        onClick={handleMyLocation}
+                        disabled={loadingLocation}
+                        className={`group relative overflow-hidden px-6 py-3 rounded-2xl border transition-all active:scale-95 flex items-center gap-3 shadow-xl ${
+                            loadingLocation 
+                                ? 'bg-slate-800 border-slate-700 cursor-not-allowed' 
+                                : 'bg-blue-500/10 border-blue-500/30 hover:bg-blue-500/20'
+                        }`}
+                    >
+                        <div className={`transition-transform ${loadingLocation ? 'animate-pulse' : 'group-hover:scale-110'}`}>
+                            <span className="text-2xl">📍</span>
+                        </div>
+                        <span className="text-sm font-bold uppercase tracking-wider text-white">
+                            {loadingLocation ? 'Obteniendo ubicación...' : 'Usar Mi Ubicación'}
+                        </span>
+                    </button>
                 </div>
 
+                {/* Mapa */}
+                <div className="bg-white/5 backdrop-blur-lg border border-white/10 p-4 rounded-3xl shadow-2xl">
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-3 text-center">
+                        Toca el mapa para marcar la ubicación exacta
+                    </p>
+                    <div className="w-full h-80 rounded-2xl overflow-hidden border-2 border-slate-700">
+                        <MapContainer 
+                            center={position} 
+                            zoom={15} 
+                            className="h-full w-full"
+                            style={{ filter: 'brightness(0.85) contrast(1.1)' }}
+                        >
+                            <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+                            <ChangeView center={position} />
+                            <LocationMarker position={position} setPosition={setPosition} />
+                        </MapContainer>
+                    </div>
+                </div>
+
+                {/* Slider de nivel de peligro */}
+                <div className="bg-white/5 backdrop-blur-lg border border-white/10 p-6 rounded-3xl shadow-2xl">
+                    <div className="flex items-center justify-between mb-6">
+                        <p className="text-slate-300 uppercase font-bold text-sm">Nivel de Riesgo</p>
+                        <div className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border ${
+                            dangerLevel >= 70 
+                                ? 'bg-red-500/20 text-red-400 border-red-500/30'
+                                : dangerLevel >= 40 
+                                    ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                    : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                        }`}>
+                            {getLevelText()}
+                        </div>
+                    </div>
+
+                    <div className="relative w-full h-4 bg-slate-800 rounded-full mb-16 mt-8">
+                        {/* Barra de progreso coloreada */}
+                        <div
+                            className={`absolute top-0 left-0 h-full rounded-full transition-all duration-300 ${getSliderColor()}`}
+                            style={{ width: `${dangerLevel}%` }}
+                        ></div>
+
+                        {/* Input Slider */}
+                        <input
+                            type="range" 
+                            min="0" 
+                            max="100" 
+                            step="10" 
+                            value={dangerLevel}
+                            onChange={(e) => setDangerLevel(parseInt(e.target.value))}
+                            className="absolute top-0 w-full h-full opacity-0 cursor-pointer z-20"
+                        />
+
+                        {/* Indicador Flotante */}
+                        <div
+                            className="absolute -top-12 flex flex-col items-center transition-all duration-150"
+                            style={{ left: `calc(${dangerLevel}% - 24px)` }}
+                        >
+                            <div className={`${getSliderColor()} text-sm font-black px-3 py-1.5 rounded-xl shadow-lg`}>
+                                {dangerLevel}%
+                            </div>
+                            <div className={`w-3 h-3 ${getSliderColor()} rotate-45 -mt-1.5`}></div>
+                        </div>
+
+                        {/* Círculo del slider */}
+                        <div
+                            className="absolute top-1/2 -translate-y-1/2 w-7 h-7 bg-white border-4 border-slate-900 rounded-full pointer-events-none shadow-xl z-10"
+                            style={{ left: `calc(${dangerLevel}% - 14px)` }}
+                        ></div>
+                    </div>
+
+                    {/* Escala de referencia */}
+                    <div className="flex justify-between text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-4">
+                        <span>0% Seguro</span>
+                        <span>50% Moderado</span>
+                        <span>100% Peligroso</span>
+                    </div>
+                </div>
+
+                {/* Botón Reportar */}
                 <button
                     onClick={handleNext}
-                    className="w-full bg-[#3b82f6]/80 hover:bg-[#3b82f6] text-white font-black py-4 rounded-md uppercase tracking-[0.2em] transition-all shadow-xl"
+                    className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-bold py-5 rounded-2xl uppercase tracking-wide transition-all active:scale-95 shadow-lg shadow-red-900/30 flex items-center justify-center gap-3"
                 >
-                    Reportar
+                    <span className="text-2xl">🚨</span>
+                    <span>Continuar con el Reporte</span>
                 </button>
-            </div>
-
-            <div className="mt-10 opacity-50">
-                <img src="/logo-ojo.png" alt="Horus Eye" className="w-16 grayscale invert" />
             </div>
         </div>
     );

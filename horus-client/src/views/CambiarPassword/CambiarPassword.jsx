@@ -34,7 +34,7 @@ const CambiarPassword = () => {
 
     return (
         <div className="min-h-screen bg-slate-900 flex flex-col justify-center items-center px-6 relative overflow-hidden">
-            {/* Luces de fondo específicas para seguridad (tonos naranja/ámbar) */}
+            {/* Luces de fondo específicas para seguridad */}
             <div className="absolute top-[-10%] right-[-10%] w-72 h-72 bg-orange-600 rounded-full blur-[120px] opacity-20"></div>
             <div className="absolute bottom-[-10%] left-[-10%] w-72 h-72 bg-amber-600 rounded-full blur-[120px] opacity-15"></div>
 

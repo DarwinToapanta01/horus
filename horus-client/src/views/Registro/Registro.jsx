@@ -12,11 +12,14 @@ const Registro = () => {
         password_confirmation: ''
     });
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleRegistro = async (e) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
+
         try {
             await api.post('/register', formData);
             alert('¡Usuario creado con éxito en Horus!');
@@ -30,45 +33,51 @@ const Registro = () => {
             } else {
                 setError('Error de conexión con el servidor.');
             }
+        } finally {
+            setLoading(false);
         }
     };
 
-    // Función auxiliar para no repetir tanto código en los inputs
-    const inputStyle = "w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm";
-
     return (
-        <div className="min-h-screen bg-slate-900 flex flex-col justify-center items-center px-4 py-10 relative overflow-hidden">
-            {/* Efectos de luces de fondo */}
-            <div className="absolute top-[-10%] right-[-10%] w-72 h-72 bg-blue-600 rounded-full blur-[120px] opacity-20"></div>
-            <div className="absolute bottom-[-10%] left-[-10%] w-72 h-72 bg-indigo-600 rounded-full blur-[120px] opacity-20"></div>
+        <div className="min-h-screen bg-slate-900 flex flex-col justify-center items-center px-6 py-10 relative overflow-hidden">
+            {/* Círculos decorativos de fondo */}
+            <div className="absolute top-[-10%] left-[-10%] w-64 h-64 bg-blue-600 rounded-full blur-[120px] opacity-20"></div>
+            <div className="absolute bottom-[-10%] right-[-10%] w-64 h-64 bg-indigo-600 rounded-full blur-[120px] opacity-20"></div>
 
-            <div className="w-full max-w-xl z-10">
-                <div className="text-center mb-8">
-                    <h1 className="text-4xl font-black text-white tracking-tighter">HORUS</h1>
+            <div className="w-full max-w-2xl z-10">
+                <div className="text-center mb-10">
+                    <h1 className="text-5xl font-black text-white tracking-tighter mb-2">
+                        HORUS
+                    </h1>
                     <p className="text-slate-400 font-medium italic">El ojo que todo lo ve</p>
+                    <p className="text-slate-500 text-sm font-bold uppercase tracking-widest mt-3">Crear Cuenta Nueva</p>
                 </div>
 
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-6 md:p-10 rounded-3xl shadow-2xl">
-                    <form onSubmit={handleRegistro} className="space-y-4">
+                <div className="bg-white/10 backdrop-blur-lg border border-white/20 p-8 rounded-3xl shadow-2xl">
+                    <form onSubmit={handleRegistro} className="space-y-5">
 
                         {/* Fila: Nombre y Apellido */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="text-xs font-bold text-slate-300 ml-1 uppercase tracking-wider">Nombre</label>
+                                <label className="block text-xs uppercase tracking-widest font-bold text-slate-300 mb-2 ml-1">
+                                    Nombre
+                                </label>
                                 <input
                                     type="text"
                                     placeholder="Ej: Diana"
-                                    className={inputStyle}
+                                    className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-5 py-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-300 ml-1 uppercase tracking-wider">Apellido</label>
+                                <label className="block text-xs uppercase tracking-widest font-bold text-slate-300 mb-2 ml-1">
+                                    Apellido
+                                </label>
                                 <input
                                     type="text"
                                     placeholder="Ej: Toapanta"
-                                    className={inputStyle}
+                                    className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-5 py-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                     onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                                     required
                                 />
@@ -78,21 +87,25 @@ const Registro = () => {
                         {/* Fila: Username y Email */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="text-xs font-bold text-slate-300 ml-1 uppercase tracking-wider">Usuario</label>
+                                <label className="block text-xs uppercase tracking-widest font-bold text-slate-300 mb-2 ml-1">
+                                    Usuario
+                                </label>
                                 <input
                                     type="text"
                                     placeholder="diana123"
-                                    className={inputStyle}
+                                    className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-5 py-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-300 ml-1 uppercase tracking-wider">Email</label>
+                                <label className="block text-xs uppercase tracking-widest font-bold text-slate-300 mb-2 ml-1">
+                                    Correo
+                                </label>
                                 <input
                                     type="email"
-                                    placeholder="correo@ejemplo.com"
-                                    className={inputStyle}
+                                    placeholder="nombre@gmail.com"
+                                    className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-5 py-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     required
                                 />
@@ -102,21 +115,26 @@ const Registro = () => {
                         {/* Fila: Password y Confirmación */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="text-xs font-bold text-slate-300 ml-1 uppercase tracking-wider">Contraseña</label>
+                                <label className="block text-xs uppercase tracking-widest font-bold text-slate-300 mb-2 ml-1">
+                                    Contraseña
+                                </label>
                                 <input
                                     type="password"
-                                    placeholder="••••••••"
-                                    className={inputStyle}
+                                    placeholder="*******"
+                                    className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-5 py-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                     required
+                                    minLength="8"
                                 />
                             </div>
                             <div>
-                                <label className="text-xs font-bold text-slate-300 ml-1 uppercase tracking-wider">Confirmar</label>
+                                <label className="block text-xs uppercase tracking-widest font-bold text-slate-300 mb-2 ml-1">
+                                    Confirmar
+                                </label>
                                 <input
                                     type="password"
-                                    placeholder="••••••••"
-                                    className={inputStyle}
+                                    placeholder="*******"
+                                    className="w-full bg-slate-800/50 border border-slate-700 rounded-2xl px-5 py-4 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                     onChange={(e) => setFormData({ ...formData, password_confirmation: e.target.value })}
                                     required
                                 />
@@ -124,22 +142,27 @@ const Registro = () => {
                         </div>
 
                         {error && (
-                            <div className="bg-red-500/20 border border-red-500/50 text-red-200 text-xs p-3 rounded-xl text-center">
+                            <p className="text-red-400 text-sm font-medium text-center animate-pulse">
                                 {error}
-                            </div>
+                            </p>
                         )}
 
                         <button
                             type="submit"
-                            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-95 mt-4 uppercase tracking-widest"
+                            disabled={loading}
+                            className={`w-full py-4 rounded-2xl font-bold uppercase tracking-wide transition-all active:scale-95 shadow-lg mt-4
+                                ${loading
+                                    ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-900/20'
+                                }`}
                         >
-                            Completar Registro
+                            {loading ? 'REGISTRANDO...' : 'COMPLETAR REGISTRO'}
                         </button>
                     </form>
 
-                    <div className="mt-6 text-center">
-                        <Link to="/login" className="text-slate-400 text-sm hover:text-white transition-colors">
-                            ¿Ya tienes cuenta? <span className="text-blue-400 font-bold">Inicia sesión</span>
+                    <div className="mt-8 text-center">
+                        <Link to="/login" className="text-blue-400 text-sm font-semibold hover:text-blue-300 transition-colors">
+                            ¿Ya tienes cuenta? Inicia sesión aquí
                         </Link>
                     </div>
                 </div>
