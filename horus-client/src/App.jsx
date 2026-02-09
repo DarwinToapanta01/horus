@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Login from './views/Login/Login';
+import Login from './views/login/Login';
 import Registro from './views/Registro/Registro';
 import OlvidoPassword from './views/OlvidoPassword/OlvidoPassword';
 import MenuPrincipal from './views/MenuPrincipal/MenuPrincipal';

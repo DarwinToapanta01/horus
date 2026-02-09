@@ -42,38 +42,38 @@ const MapaSeguridad = () => {
     return (
         <div className="h-screen w-full flex flex-col bg-slate-900 relative overflow-hidden">
             {/* Luces de fondo sutiles */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[100px] pointer-events-none z-[999]"></div>
+            <div className="absolute top-0 right-0 w-32 h-32 md:w-64 md:h-64 bg-blue-600/10 blur-[100px] pointer-events-none z-[999]"></div>
 
-            {/* Header Flotante */}
-            <div className="absolute top-6 left-40 right-40 z-[1000] flex justify-between items-start gap-3">
+            {/* Header Flotante - RESPONSIVE */}
+            <div className="absolute top-3 left-3 right-3 md:top-6 md:left-6 md:right-6 lg:left-40 lg:right-40 z-[1000] flex flex-col sm:flex-row justify-between items-stretch sm:items-start gap-2 md:gap-3">
                 {/* Título */}
-                <div className="bg-slate-900/90 backdrop-blur-lg border border-white/20 px-5 py-3 rounded-2xl shadow-2xl flex-1">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-blue-500/10 border border-blue-500/20 p-2 rounded-xl">
-                            <span className="text-xl">🗺️</span>
+                <div className="bg-slate-900/90 backdrop-blur-lg border border-white/20 px-3 py-2 md:px-5 md:py-3 rounded-xl md:rounded-2xl shadow-2xl flex-1">
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <div className="bg-blue-500/10 border border-blue-500/20 p-1.5 md:p-2 rounded-lg md:rounded-xl">
+                            <span className="text-base md:text-xl">🗺️</span>
                         </div>
                         <div>
-                            <h2 className="text-white font-black text-sm uppercase tracking-tight">Mapa de Vigilancia</h2>
-                            <p className="text-slate-400 text-[10px] font-medium uppercase tracking-wider">Horus • Tiempo Real</p>
+                            <h2 className="text-white font-black text-xs md:text-sm uppercase tracking-tight">Mapa de Vigilancia</h2>
+                            <p className="text-slate-400 text-[9px] md:text-[10px] font-medium uppercase tracking-wider">Horus • Tiempo Real</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Contador de reportes */}
-                <div className="bg-slate-900/90 backdrop-blur-lg border border-blue-500/30 px-4 py-3 rounded-2xl shadow-2xl">
-                    <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                <div className="bg-slate-900/90 backdrop-blur-lg border border-blue-500/30 px-3 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl shadow-2xl">
+                    <div className="flex items-center gap-2 justify-center sm:justify-start">
+                        <div className="w-7 h-7 md:w-8 md:h-8 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
                             <span className="text-white font-black text-xs">{reportes.length}</span>
                         </div>
-                        <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Zonas</span>
+                        <span className="text-[9px] md:text-[10px] text-slate-400 font-bold uppercase tracking-wider">Zonas</span>
                     </div>
                 </div>
             </div>
 
             {loading ? (
-                <div className="flex-1 flex flex-col items-center justify-center">
-                    <div className="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4"></div>
-                    <p className="text-slate-400 text-sm font-medium uppercase tracking-widest">Cargando mapa...</p>
+                <div className="flex-1 flex flex-col items-center justify-center px-4">
+                    <div className="w-10 h-10 md:w-12 md:h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4"></div>
+                    <p className="text-slate-400 text-xs md:text-sm font-medium uppercase tracking-widest text-center">Cargando mapa...</p>
                 </div>
             ) : (
                 <MapContainer
@@ -99,15 +99,15 @@ const MapaSeguridad = () => {
                             return (
                                 <React.Fragment key={reporte.id}>
                                     <Marker position={[reporte.latitude, reporte.longitude]}>
-                                        <Popup>
-                                            <div className="p-4 min-w-[200px] max-w-[240px] font-sans antialiased bg-slate-900 rounded-2xl">
+                                        <Popup maxWidth={280} minWidth={200}>
+                                            <div className="p-3 md:p-4 w-full font-sans antialiased bg-slate-900 rounded-xl md:rounded-2xl">
                                                 {/* Cabecera con Fecha y Badge de Estado */}
-                                                <div className="flex flex-col gap-2 mb-4">
-                                                    <span className="text-[10px] text-slate-400 font-bold tracking-wider flex items-center gap-1.5">
-                                                        <span className="text-xs">📅</span> {reporte.formatted_date}
+                                                <div className="flex flex-col gap-2 mb-3 md:mb-4">
+                                                    <span className="text-[10px] md:text-[11px] text-slate-400 font-bold tracking-wider flex items-center gap-1.5">
+                                                        <span className="text-xs md:text-sm">📅</span> {reporte.formatted_date}
                                                     </span>
 
-                                                    <div className={`text-[9px] w-fit px-2.5 py-1 rounded-full font-bold uppercase tracking-wide border ${isVerified
+                                                    <div className={`text-[9px] md:text-[10px] w-fit px-2 md:px-2.5 py-1 rounded-full font-bold uppercase tracking-wide border ${isVerified
                                                         ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
                                                         : 'bg-amber-500/20 text-amber-400 border-amber-500/30'
                                                         }`}>
@@ -117,42 +117,42 @@ const MapaSeguridad = () => {
 
                                                 {/* Contenido Principal */}
                                                 {isVerified ? (
-                                                    <div className="space-y-3">
-                                                        <p className="text-[13px] text-slate-300 leading-snug font-medium">
+                                                    <div className="space-y-2 md:space-y-3">
+                                                        <p className="text-xs md:text-[13px] text-slate-300 leading-snug font-medium">
                                                             {reporte.description}
                                                         </p>
                                                         <button
                                                             onClick={() => navigate(`/reporte/${reporte.id}/comentarios`)}
-                                                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-[10px] py-2.5 rounded-xl uppercase font-bold shadow-lg shadow-blue-900/30 transition-all active:scale-95 flex items-center justify-center gap-2 group"
+                                                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-[10px] md:text-[11px] py-2 md:py-2.5 rounded-lg md:rounded-xl uppercase font-bold shadow-lg shadow-blue-900/30 transition-all active:scale-95 flex items-center justify-center gap-2 group"
                                                         >
                                                             Ver Muro 💬
                                                             <span className="group-hover:translate-x-1 transition-transform">→</span>
                                                         </button>
                                                     </div>
                                                 ) : (
-                                                    <div className="space-y-3">
-                                                        <div className="bg-amber-500/10 border-l-4 border-amber-500 p-3 rounded-r-xl">
-                                                            <p className="text-[11px] text-amber-300 leading-tight font-medium">
-                                                                Contenido bloqueado. Faltan <span className="font-black text-amber-400">{3 - (reporte.confirms || 0)} votos</span> para liberar la información.
+                                                    <div className="space-y-2 md:space-y-3">
+                                                        <div className="bg-amber-500/10 border-l-4 border-amber-500 p-2 md:p-3 rounded-r-lg md:rounded-r-xl">
+                                                            <p className="text-[10px] md:text-[11px] text-amber-300 leading-tight font-medium">
+                                                                Contenido bloqueado. Faltan <span className="font-black text-amber-400">{3 - (reporte.confirms || 0)} votos</span> para liberar.
                                                             </p>
                                                         </div>
                                                         <button
                                                             onClick={() => navigate('/votacion-lista')}
-                                                            className="w-full bg-slate-800 hover:bg-slate-700 text-white text-[10px] py-2.5 rounded-xl uppercase font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
+                                                            className="w-full bg-slate-800 hover:bg-slate-700 text-white text-[10px] md:text-[11px] py-2 md:py-2.5 rounded-lg md:rounded-xl uppercase font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
                                                         >
                                                             Validar Zona 🗳️
                                                         </button>
                                                     </div>
                                                 )}
 
-                                                {/* Footer: Votaciones con barra de progreso visual */}
-                                                <div className="mt-4 pt-3 border-t border-white/10">
-                                                    <div className="flex justify-between text-[10px] font-black mb-2">
+                                                {/* Footer: Votaciones */}
+                                                <div className="mt-3 md:mt-4 pt-2 md:pt-3 border-t border-white/10">
+                                                    <div className="flex justify-between text-[10px] md:text-[11px] font-black mb-2">
                                                         <span className="text-emerald-400">SÍ: {reporte.confirms || 0}</span>
                                                         <span className="text-red-400">NO: {reporte.rejects || 0}</span>
                                                     </div>
-                                                    {/* Barra de progreso visual */}
-                                                    <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden flex">
+                                                    {/* Barra de progreso */}
+                                                    <div className="w-full h-1.5 md:h-2 bg-slate-800 rounded-full overflow-hidden flex">
                                                         <div
                                                             className="h-full bg-emerald-500 transition-all"
                                                             style={{ width: `${(reporte.confirms / (reporte.confirms + reporte.rejects || 1)) * 100}%` }}
@@ -187,27 +187,27 @@ const MapaSeguridad = () => {
             {/* BOTÓN FLOTANTE: Crear nuevo reporte */}
             <button
                 onClick={() => navigate('/ubicar-zona')}
-                className="absolute bottom-8 right-6 z-[1000] bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white w-16 h-16 rounded-full shadow-[0_0_30px_rgba(220,38,38,0.6)] flex items-center justify-center text-3xl active:scale-90 transition-all border-4 border-white/20"
+                className="absolute bottom-4 right-4 md:bottom-8 md:right-6 z-[1000] bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white w-14 h-14 md:w-16 md:h-16 rounded-full shadow-[0_0_30px_rgba(220,38,38,0.6)] flex items-center justify-center text-2xl md:text-3xl active:scale-90 transition-all border-2 md:border-4 border-white/20"
                 title="Reportar nueva zona"
             >
                 🚨
             </button>
 
             {/* Leyenda de colores */}
-            <div className="absolute bottom-8 left-6 z-[1000] bg-slate-900/90 backdrop-blur-lg border border-white/20 px-4 py-3 rounded-2xl shadow-2xl">
-                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-2">Nivel de Peligro</p>
-                <div className="space-y-1.5">
-                    <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
-                        <span className="text-[10px] text-slate-300 font-medium">Bajo (&lt;40%)</span>
+            <div className="absolute bottom-4 left-4 md:bottom-8 md:left-6 z-[1000] bg-slate-900/90 backdrop-blur-lg border border-white/20 px-3 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl shadow-2xl">
+                <p className="text-[9px] md:text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">Nivel de Peligro</p>
+                <div className="space-y-1 md:space-y-1.5">
+                    <div className="flex items-center gap-1.5 md:gap-2">
+                        <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-emerald-500"></div>
+                        <span className="text-[9px] md:text-[10px] text-slate-300 font-medium">Bajo</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-amber-500"></div>
-                        <span className="text-[10px] text-slate-300 font-medium">Medio (40-70%)</span>
+                    <div className="flex items-center gap-1.5 md:gap-2">
+                        <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-amber-500"></div>
+                        <span className="text-[9px] md:text-[10px] text-slate-300 font-medium">Medio</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                        <span className="text-[10px] text-slate-300 font-medium">Alto (&gt;70%)</span>
+                    <div className="flex items-center gap-1.5 md:gap-2">
+                        <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-red-500"></div>
+                        <span className="text-[9px] md:text-[10px] text-slate-300 font-medium">Alto</span>
                     </div>
                 </div>
             </div>
