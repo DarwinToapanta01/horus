@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../../api/axios';
 import { Link } from 'react-router-dom';
+import { IconUnlock } from '../../components/Icons';
 
 const OlvidoPassword = () => {
     const [email, setEmail] = useState('');
@@ -33,9 +34,10 @@ const OlvidoPassword = () => {
             <div className="w-full max-w-md z-10">
                 {/* Header con icono */}
                 <div className="text-center mb-8">
-                    <div className="inline-block p-4 bg-blue-500/10 rounded-2xl mb-4 border border-blue-500/20">
-                        <span className="text-4xl">🔐</span>
+                    <div className="inline-flex p-4 bg-blue-500/10 rounded-2xl mb-4 border border-blue-500/20 text-blue-500">
+                        <IconUnlock className="w-10 h-10" />
                     </div>
+
                     <h2 className="text-3xl font-black text-white tracking-tight uppercase">Recuperar Acceso</h2>
                     <p className="text-slate-400 mt-2 text-sm font-medium">
                         Ingresa tu correo para recibir una clave temporal.

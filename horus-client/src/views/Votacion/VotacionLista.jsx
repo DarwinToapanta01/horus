@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
 import api from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
+import { IconVote, IconAlert, IconCalendar, IconClock } from '../../components/Icons';
+
 
 const VotacionLista = () => {
     const [reportes, setReportes] = useState([]);
@@ -49,7 +51,7 @@ const VotacionLista = () => {
             alert("Por favor, selecciona SÍ o NO");
             return;
         }
-        
+
         setLoading(true);
 
         navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -97,7 +99,7 @@ const VotacionLista = () => {
 
                 <div className="flex items-center gap-3">
                     <div className="p-3 bg-purple-500/10 rounded-2xl border border-purple-500/20">
-                        <span className="text-3xl">🗳️</span>
+                        <IconVote className="w-8 h-8 text-purple-400" />
                     </div>
                     <div>
                         <h1 className="text-3xl font-black tracking-tight uppercase">Validar Reportes</h1>
@@ -115,7 +117,10 @@ const VotacionLista = () => {
                     </div>
                 ) : reportesPendientes.length === 0 ? (
                     <div className="bg-white/5 backdrop-blur-lg border border-white/10 p-8 rounded-3xl text-center">
-                        <span className="text-5xl mb-4 block opacity-50">✅</span>
+                        <div className="flex justify-center mb-4 opacity-50">
+                            <IconAlert className="w-12 h-12 text-emerald-400" />
+                        </div>
+
                         <p className="text-slate-400 text-sm font-medium">No hay reportes pendientes de validación.</p>
                         <p className="text-slate-500 text-xs mt-2">¡Excelente! Todos los reportes activos ya están verificados.</p>
                     </div>
@@ -124,11 +129,10 @@ const VotacionLista = () => {
                         <div
                             key={r.id}
                             onClick={() => !r.user_has_voted && setSelectedReport(r)}
-                            className={`group relative overflow-hidden bg-white/5 backdrop-blur-lg border rounded-3xl shadow-xl transition-all ${
-                                r.user_has_voted 
-                                    ? 'opacity-50 cursor-not-allowed border-white/10' 
-                                    : `cursor-pointer active:scale-[0.98] hover:border-purple-500/30 border-white/10`
-                            }`}
+                            className={`group relative overflow-hidden bg-white/5 backdrop-blur-lg border rounded-3xl shadow-xl transition-all ${r.user_has_voted
+                                ? 'opacity-50 cursor-not-allowed border-white/10'
+                                : `cursor-pointer active:scale-[0.98] hover:border-purple-500/30 border-white/10`
+                                }`}
                         >
                             {/* Gradiente hover */}
                             {!r.user_has_voted && (
@@ -139,7 +143,15 @@ const VotacionLista = () => {
                             <div className={`relative z-10 px-5 py-3 font-bold text-sm uppercase tracking-wide flex justify-between items-center ${getColorClass(r.danger_level)}`}>
                                 <span className="text-slate-900">Zona #{r.id}</span>
                                 <span className="bg-black/20 px-3 py-1 rounded-full text-[10px] font-black">
-                                    {r.user_has_voted ? '✓ VOTADO' : '⏳ PENDIENTE'}
+                                    {r.user_has_voted ? (
+                                        '✓ VOTADO'
+                                    ) : (
+                                        <span className="flex items-center gap-1">
+                                            <IconClock className="w-3 h-3" />
+                                            PENDIENTE
+                                        </span>
+                                    )}
+
                                 </span>
                             </div>
 
@@ -147,16 +159,15 @@ const VotacionLista = () => {
                             <div className="relative z-10 p-5">
                                 <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2 text-xs text-slate-400 font-medium">
-                                        <span>📅</span>
+                                        <IconCalendar className="w-4 h-4" />
                                         <span>{r.formatted_date}</span>
                                     </div>
-                                    <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${
-                                        r.danger_level >= 70 
-                                            ? 'bg-red-500/20 text-red-400 border-red-500/30'
-                                            : r.danger_level >= 40 
-                                                ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                                                : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-                                    }`}>
+                                    <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${r.danger_level >= 70
+                                        ? 'bg-red-500/20 text-red-400 border-red-500/30'
+                                        : r.danger_level >= 40
+                                            ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                            : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                                        }`}>
                                         Nivel {r.danger_level}%
                                     </div>
                                 </div>
@@ -168,12 +179,12 @@ const VotacionLista = () => {
                                         <span className="text-red-400">NO: {r.rejects}</span>
                                     </div>
                                     <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden flex">
-                                        <div 
-                                            className="h-full bg-emerald-500 transition-all" 
+                                        <div
+                                            className="h-full bg-emerald-500 transition-all"
                                             style={{ width: `${(r.confirms / (r.confirms + r.rejects || 1)) * 100}%` }}
                                         />
-                                        <div 
-                                            className="h-full bg-red-500 transition-all" 
+                                        <div
+                                            className="h-full bg-red-500 transition-all"
                                             style={{ width: `${(r.rejects / (r.confirms + r.rejects || 1)) * 100}%` }}
                                         />
                                     </div>
@@ -238,13 +249,12 @@ const VotacionLista = () => {
                                 <div className="bg-slate-900/80 backdrop-blur-lg border border-white/20 p-4 rounded-2xl">
                                     <h3 className="text-white font-black uppercase text-sm tracking-tight">Zona #{selectedReport.id}</h3>
                                     <div className="flex items-center gap-2 mt-2">
-                                        <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border ${
-                                            selectedReport.danger_level >= 70 
-                                                ? 'bg-red-500/20 text-red-400 border-red-500/30'
-                                                : selectedReport.danger_level >= 40 
-                                                    ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                                                    : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
-                                        }`}>
+                                        <span className={`px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border ${selectedReport.danger_level >= 70
+                                            ? 'bg-red-500/20 text-red-400 border-red-500/30'
+                                            : selectedReport.danger_level >= 40
+                                                ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                                : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                                            }`}>
                                             Nivel {selectedReport.danger_level}%
                                         </span>
                                         <span className="text-[10px] text-slate-400 font-medium">{selectedReport.formatted_date}</span>
@@ -265,43 +275,39 @@ const VotacionLista = () => {
                             {/* Opciones de voto */}
                             <div className="flex justify-center gap-8 mb-8">
                                 <label className="flex flex-col items-center gap-3 cursor-pointer group">
-                                    <input 
-                                        type="radio" 
-                                        name="vote" 
-                                        className="hidden" 
-                                        onChange={() => setVoto(true)} 
+                                    <input
+                                        type="radio"
+                                        name="vote"
+                                        className="hidden"
+                                        onChange={() => setVoto(true)}
                                     />
-                                    <div className={`w-20 h-20 rounded-full border-4 flex items-center justify-center transition-all shadow-lg ${
-                                        voto === true 
-                                            ? 'bg-gradient-to-br from-emerald-600 to-emerald-500 border-white scale-110 shadow-emerald-500/50' 
-                                            : 'border-slate-700 bg-slate-800/50 group-hover:border-emerald-500/50 group-hover:scale-105'
-                                    }`}>
+                                    <div className={`w-20 h-20 rounded-full border-4 flex items-center justify-center transition-all shadow-lg ${voto === true
+                                        ? 'bg-gradient-to-br from-emerald-600 to-emerald-500 border-white scale-110 shadow-emerald-500/50'
+                                        : 'border-slate-700 bg-slate-800/50 group-hover:border-emerald-500/50 group-hover:scale-105'
+                                        }`}>
                                         <span className="text-2xl font-black">✓</span>
                                     </div>
-                                    <span className={`text-xs font-bold uppercase tracking-wider transition-colors ${
-                                        voto === true ? 'text-emerald-400' : 'text-slate-500'
-                                    }`}>
+                                    <span className={`text-xs font-bold uppercase tracking-wider transition-colors ${voto === true ? 'text-emerald-400' : 'text-slate-500'
+                                        }`}>
                                         Es Real
                                     </span>
                                 </label>
 
                                 <label className="flex flex-col items-center gap-3 cursor-pointer group">
-                                    <input 
-                                        type="radio" 
-                                        name="vote" 
-                                        className="hidden" 
-                                        onChange={() => setVoto(false)} 
+                                    <input
+                                        type="radio"
+                                        name="vote"
+                                        className="hidden"
+                                        onChange={() => setVoto(false)}
                                     />
-                                    <div className={`w-20 h-20 rounded-full border-4 flex items-center justify-center transition-all shadow-lg ${
-                                        voto === false 
-                                            ? 'bg-gradient-to-br from-red-600 to-red-500 border-white scale-110 shadow-red-500/50' 
-                                            : 'border-slate-700 bg-slate-800/50 group-hover:border-red-500/50 group-hover:scale-105'
-                                    }`}>
+                                    <div className={`w-20 h-20 rounded-full border-4 flex items-center justify-center transition-all shadow-lg ${voto === false
+                                        ? 'bg-gradient-to-br from-red-600 to-red-500 border-white scale-110 shadow-red-500/50'
+                                        : 'border-slate-700 bg-slate-800/50 group-hover:border-red-500/50 group-hover:scale-105'
+                                        }`}>
                                         <span className="text-2xl font-black">✕</span>
                                     </div>
-                                    <span className={`text-xs font-bold uppercase tracking-wider transition-colors ${
-                                        voto === false ? 'text-red-400' : 'text-slate-500'
-                                    }`}>
+                                    <span className={`text-xs font-bold uppercase tracking-wider transition-colors ${voto === false ? 'text-red-400' : 'text-slate-500'
+                                        }`}>
                                         Es Falso
                                     </span>
                                 </label>
@@ -312,11 +318,10 @@ const VotacionLista = () => {
                                 <button
                                     onClick={handleVotar}
                                     disabled={loading || voto === null}
-                                    className={`w-full font-bold py-4 rounded-2xl uppercase tracking-wide transition-all active:scale-95 shadow-lg flex items-center justify-center gap-3 ${
-                                        loading || voto === null
-                                            ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
-                                            : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-purple-900/30'
-                                    }`}
+                                    className={`w-full font-bold py-4 rounded-2xl uppercase tracking-wide transition-all active:scale-95 shadow-lg flex items-center justify-center gap-3 ${loading || voto === null
+                                        ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                                        : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow-purple-900/30'
+                                        }`}
                                 >
                                     {loading ? (
                                         <>
@@ -325,16 +330,16 @@ const VotacionLista = () => {
                                         </>
                                     ) : (
                                         <>
-                                            <span className="text-xl">🗳️</span>
+                                            <IconVote className="w-5 h-5" />
                                             <span>Confirmar Voto</span>
                                         </>
                                     )}
                                 </button>
 
                                 <button
-                                    onClick={() => { 
-                                        setSelectedReport(null); 
-                                        setVoto(null); 
+                                    onClick={() => {
+                                        setSelectedReport(null);
+                                        setVoto(null);
                                     }}
                                     className="w-full text-slate-500 hover:text-slate-300 text-sm font-bold uppercase py-3 transition-colors"
                                 >

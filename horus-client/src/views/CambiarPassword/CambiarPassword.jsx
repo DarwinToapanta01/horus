@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
+import { IconShield } from '../../components/Icons';
 
 const CambiarPassword = () => {
     const [password, setPassword] = useState('');
@@ -40,9 +41,10 @@ const CambiarPassword = () => {
 
             <div className="w-full max-w-md z-10">
                 <div className="text-center mb-8">
-                    <div className="inline-block p-4 bg-orange-500/10 rounded-2xl mb-4 border border-orange-500/20">
-                        <span className="text-4xl">🛡️</span>
+                    <div className="inline-flex p-4 bg-orange-500/10 rounded-2xl mb-4 border border-orange-500/20 text-orange-500">
+                        <IconShield className="w-10 h-10" />
                     </div>
+
                     <h2 className="text-3xl font-black text-white tracking-tight uppercase">Seguridad de Cuenta</h2>
                     <p className="text-slate-400 mt-2 text-sm font-medium">
                         Establece una nueva contraseña para proteger tu perfil en Horus.
@@ -88,8 +90,8 @@ const CambiarPassword = () => {
                             type="submit"
                             disabled={loading}
                             className={`w-full py-4 rounded-2xl font-bold uppercase tracking-wide transition-all active:scale-95 shadow-lg mt-4
-                                ${loading 
-                                    ? 'bg-slate-700 text-slate-500 cursor-not-allowed' 
+                                ${loading
+                                    ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
                                     : 'bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white shadow-orange-900/20'
                                 }`}
                         >

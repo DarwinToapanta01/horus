@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import api from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
+import { IconMap, IconCalendar, IconComment, IconVote, IconAlert, IconArrowLeft } from '../../components/Icons';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -46,11 +47,21 @@ const MapaSeguridad = () => {
 
             {/* Header Flotante - RESPONSIVE */}
             <div className="absolute top-3 left-3 right-3 md:top-6 md:left-6 md:right-6 lg:left-40 lg:right-40 z-[1000] flex flex-col sm:flex-row justify-between items-stretch sm:items-start gap-2 md:gap-3">
+                {/* BOTÓN MENU PRINCIPAL */}
+                <button
+                    onClick={() => navigate('/menu')}
+                    className="bg-slate-900/90 backdrop-blur-lg border border-white/20 px-3 py-2 md:px-4 md:py-3 rounded-xl md:rounded-2xl shadow-2xl flex items-center gap-2 text-slate-300 hover:text-white hover:border-blue-500/40 transition-all active:scale-95"
+                >
+                    <IconArrowLeft className="w-4 h-4 md:w-5 md:h-5" />
+                    <span className="text-[10px] md:text-xs font-bold uppercase tracking-wider">
+                        Menú Principal
+                    </span>
+                </button>
                 {/* Título */}
                 <div className="bg-slate-900/90 backdrop-blur-lg border border-white/20 px-3 py-2 md:px-5 md:py-3 rounded-xl md:rounded-2xl shadow-2xl flex-1">
                     <div className="flex items-center gap-2 md:gap-3">
                         <div className="bg-blue-500/10 border border-blue-500/20 p-1.5 md:p-2 rounded-lg md:rounded-xl">
-                            <span className="text-base md:text-xl">🗺️</span>
+                            <IconMap className="w-5 h-5 md:w-6 md:h-6 text-blue-400" />
                         </div>
                         <div>
                             <h2 className="text-white font-black text-xs md:text-sm uppercase tracking-tight">Mapa de Vigilancia</h2>
@@ -104,7 +115,8 @@ const MapaSeguridad = () => {
                                                 {/* Cabecera con Fecha y Badge de Estado */}
                                                 <div className="flex flex-col gap-2 mb-3 md:mb-4">
                                                     <span className="text-[10px] md:text-[11px] text-slate-400 font-bold tracking-wider flex items-center gap-1.5">
-                                                        <span className="text-xs md:text-sm">📅</span> {reporte.formatted_date}
+                                                        <IconCalendar className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-400" />
+                                                        {reporte.formatted_date}
                                                     </span>
 
                                                     <div className={`text-[9px] md:text-[10px] w-fit px-2 md:px-2.5 py-1 rounded-full font-bold uppercase tracking-wide border ${isVerified
@@ -125,7 +137,9 @@ const MapaSeguridad = () => {
                                                             onClick={() => navigate(`/reporte/${reporte.id}/comentarios`)}
                                                             className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-[10px] md:text-[11px] py-2 md:py-2.5 rounded-lg md:rounded-xl uppercase font-bold shadow-lg shadow-blue-900/30 transition-all active:scale-95 flex items-center justify-center gap-2 group"
                                                         >
-                                                            Ver Muro 💬
+                                                            <IconComment className="w-4 h-4" />
+                                                            <span>Ver Muro</span>
+
                                                             <span className="group-hover:translate-x-1 transition-transform">→</span>
                                                         </button>
                                                     </div>
@@ -140,7 +154,9 @@ const MapaSeguridad = () => {
                                                             onClick={() => navigate('/votacion-lista')}
                                                             className="w-full bg-slate-800 hover:bg-slate-700 text-white text-[10px] md:text-[11px] py-2 md:py-2.5 rounded-lg md:rounded-xl uppercase font-bold transition-all active:scale-95 flex items-center justify-center gap-2"
                                                         >
-                                                            Validar Zona 🗳️
+                                                            <IconVote className="w-4 h-4" />
+                                                            <span>Validar Zona</span>
+
                                                         </button>
                                                     </div>
                                                 )}
@@ -190,7 +206,7 @@ const MapaSeguridad = () => {
                 className="absolute bottom-4 right-4 md:bottom-8 md:right-6 z-[1000] bg-gradient-to-br from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white w-14 h-14 md:w-16 md:h-16 rounded-full shadow-[0_0_30px_rgba(220,38,38,0.6)] flex items-center justify-center text-2xl md:text-3xl active:scale-90 transition-all border-2 md:border-4 border-white/20"
                 title="Reportar nueva zona"
             >
-                🚨
+                <IconAlert className="w-7 h-7 md:w-8 md:h-8 text-white" />
             </button>
 
             {/* Leyenda de colores */}

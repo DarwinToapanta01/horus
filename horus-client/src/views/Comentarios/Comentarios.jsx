@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import api from '../../api/axios';
+import { IconLocation, IconComment } from '../../components/Icons';
 
 const Comentarios = () => {
     const { id } = useParams();
@@ -85,7 +86,7 @@ const Comentarios = () => {
                 {/* Badge flotante con info mínima - esquina superior derecha */}
                 <div className="absolute top-4 right-4 z-[1001] bg-slate-900/90 backdrop-blur-md border border-emerald-500/30 px-4 py-2 rounded-xl shadow-lg">
                     <div className="flex items-center gap-2">
-                        <span className="text-lg">📍</span>
+                        <IconLocation className="w-5 h-5 text-emerald-400" />
                         <div>
                             <p className="text-xs font-black uppercase tracking-tight">Zona #{reporte.id}</p>
                             <p className="text-[9px] text-emerald-400 font-bold uppercase">✓ Verificada</p>
@@ -113,14 +114,16 @@ const Comentarios = () => {
 
                 {comentarios.length === 0 ? (
                     <div className="bg-white/5 backdrop-blur-lg border border-white/10 p-8 rounded-3xl text-center mt-8">
-                        <span className="text-5xl mb-4 block opacity-50">💭</span>
+                        <div className="flex justify-center mb-4 opacity-50">
+                            <IconComment className="w-12 h-12 text-slate-400" />
+                        </div>
                         <p className="text-slate-400 text-sm font-medium">No hay testimonios aún.</p>
                         <p className="text-slate-500 text-xs mt-2">Sé el primero en compartir información sobre esta zona.</p>
                     </div>
                 ) : (
                     comentarios.map((c, index) => (
-                        <div 
-                            key={c.id} 
+                        <div
+                            key={c.id}
                             className="bg-white/5 backdrop-blur-lg border border-white/10 p-5 rounded-3xl shadow-xl hover:border-emerald-500/20 transition-all relative"
                         >
                             <div className="flex gap-3 mb-3">
@@ -135,8 +138,8 @@ const Comentarios = () => {
                                             {c.user.name}
                                         </span>
                                         <span className="text-[10px] text-slate-500 font-medium whitespace-nowrap">
-                                            {new Date(c.created_at).toLocaleDateString('es-ES', { 
-                                                day: 'numeric', 
+                                            {new Date(c.created_at).toLocaleDateString('es-ES', {
+                                                day: 'numeric',
                                                 month: 'short',
                                                 hour: '2-digit',
                                                 minute: '2-digit'
@@ -163,7 +166,7 @@ const Comentarios = () => {
                         placeholder="Comparte información..."
                         className="flex-1 bg-slate-800/50 border border-slate-700 rounded-2xl px-5 py-4 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                     />
-                    <button 
+                    <button
                         type="submit"
                         className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 px-8 rounded-2xl font-bold text-sm uppercase tracking-wide transition-all active:scale-95 shadow-lg shadow-emerald-900/20"
                     >

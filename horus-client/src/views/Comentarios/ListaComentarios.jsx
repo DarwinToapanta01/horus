@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import { useNavigate } from 'react-router-dom';
+import { IconComment, IconLocation, IconMap } from '../../components/Icons';
 
 const ListaComentarios = () => {
     const [reportes, setReportes] = useState([]);
@@ -43,7 +44,7 @@ const ListaComentarios = () => {
 
                 <div className="flex items-center gap-3">
                     <div className="p-3 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
-                        <span className="text-3xl">💬</span>
+                        <IconComment className="w-8 h-8 text-emerald-400" />
                     </div>
                     <div>
                         <h1 className="text-3xl font-black tracking-tight uppercase">Debates Ciudadanos</h1>
@@ -61,7 +62,10 @@ const ListaComentarios = () => {
                     </div>
                 ) : reportes.length === 0 ? (
                     <div className="bg-white/5 backdrop-blur-lg border border-white/10 p-8 rounded-3xl text-center">
-                        <span className="text-5xl mb-4 block opacity-50">🔍</span>
+                        <div className="flex justify-center mb-4 opacity-50">
+                            <IconMap className="w-12 h-12 text-slate-400" />
+                        </div>
+
                         <p className="text-slate-400 text-sm font-medium">No hay zonas verificadas para debatir aún.</p>
                         <p className="text-slate-500 text-xs mt-2">Las zonas necesitan 3+ votos de confirmación.</p>
                     </div>
@@ -77,7 +81,7 @@ const ListaComentarios = () => {
 
                             <div className="flex items-center gap-4 relative z-10">
                                 <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-3">
-                                    <span className="text-2xl">📍</span>
+                                    <IconLocation className="w-6 h-6 text-emerald-400" />
                                 </div>
                                 <div className="text-left">
                                     <p className="font-bold text-sm uppercase tracking-wide text-white">Zona #{r.id}</p>

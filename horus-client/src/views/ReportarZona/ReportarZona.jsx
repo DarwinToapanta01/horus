@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Circle } from 'react-leaflet';
 import api from '../../api/axios';
+import { IconAlert, IconLocation, IconComment, IconInfo } from './../../components/Icons';
+
 
 const ReportarZona = () => {
     const { state } = useLocation();
@@ -72,9 +74,10 @@ const ReportarZona = () => {
                 </button>
 
                 <div className="flex items-center gap-3">
-                    <div className="p-3 bg-red-500/10 rounded-2xl border border-red-500/20">
-                        <span className="text-3xl">📝</span>
+                    <div className="p-3 bg-red-500/10 rounded-2xl border border-red-500/20 text-red-400">
+                        <IconAlert className="w-7 h-7" />
                     </div>
+
                     <div>
                         <h1 className="text-3xl font-black tracking-tight uppercase">Detalles del Reporte</h1>
                         <p className="text-slate-400 text-sm font-medium mt-1">Paso 2 de 2 • Confirma la información</p>
@@ -86,9 +89,11 @@ const ReportarZona = () => {
             <div className="relative z-10 space-y-6 max-w-2xl mx-auto">
                 {/* Ubicación con Mapa */}
                 <div className="bg-white/5 backdrop-blur-lg border border-white/10 p-6 rounded-3xl shadow-xl">
-                    <label className="block text-xs uppercase tracking-widest font-bold text-slate-300 mb-3 ml-1">
-                        📍 Ubicación Seleccionada
+                    <label className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-slate-300 mb-3 ml-1">
+                        <IconLocation className="w-4 h-4 text-blue-400" />
+                        Ubicación Seleccionada
                     </label>
+
                     <div className="w-full h-64 rounded-2xl overflow-hidden border-2 border-slate-700">
                         <MapContainer
                             center={state.position}
@@ -123,14 +128,16 @@ const ReportarZona = () => {
                 {/* Nivel de Peligrosidad */}
                 <div className="bg-white/5 backdrop-blur-lg border border-white/10 p-6 rounded-3xl shadow-xl">
                     <div className="flex items-center justify-between mb-4">
-                        <label className="text-xs uppercase tracking-widest font-bold text-slate-300">
-                            ⚠️ Nivel de Riesgo
+                        <label className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-slate-300">
+                            <IconAlert className="w-4 h-4 text-red-400" />
+                            Nivel de Riesgo
                         </label>
+
                         <div className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider border ${state.dangerLevel >= 70
-                                ? 'bg-red-500/20 text-red-400 border-red-500/30'
-                                : state.dangerLevel >= 40
-                                    ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
-                                    : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                            ? 'bg-red-500/20 text-red-400 border-red-500/30'
+                            : state.dangerLevel >= 40
+                                ? 'bg-amber-500/20 text-amber-400 border-amber-500/30'
+                                : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
                             }`}>
                             {getLevelText()}
                         </div>
@@ -163,9 +170,11 @@ const ReportarZona = () => {
 
                 {/* Comentario */}
                 <div className="bg-white/5 backdrop-blur-lg border border-white/10 p-6 rounded-3xl shadow-xl">
-                    <label className="block text-xs uppercase tracking-widest font-bold text-slate-300 mb-3 ml-1">
-                        💬 Descripción del Incidente
+                    <label className="flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-slate-300 mb-3 ml-1">
+                        <IconComment className="w-4 h-4 text-emerald-400" />
+                        Descripción del Incidente
                     </label>
+
                     <textarea
                         value={comentario}
                         onChange={(e) => setComentario(e.target.value)}
@@ -190,8 +199,8 @@ const ReportarZona = () => {
                         onClick={handleFinalReport}
                         disabled={loading || !comentario.trim()}
                         className={`flex-1 font-bold py-4 rounded-2xl uppercase tracking-wide transition-all active:scale-95 shadow-lg flex items-center justify-center gap-3 ${loading || !comentario.trim()
-                                ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
-                                : 'bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white shadow-red-900/30'
+                            ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white shadow-red-900/30'
                             }`}
                     >
                         {loading ? (
@@ -201,7 +210,7 @@ const ReportarZona = () => {
                             </>
                         ) : (
                             <>
-                                <span className="text-xl">🚨</span>
+                                <IconAlert className="w-6 h-6" />
                                 <span>Enviar Reporte</span>
                             </>
                         )}
@@ -211,7 +220,7 @@ const ReportarZona = () => {
                 {/* Info adicional */}
                 <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-2xl">
                     <div className="flex items-start gap-3">
-                        <span className="text-xl">ℹ️</span>
+                        <IconInfo className="w-6 h-6 text-blue-400 mt-0.5" />
                         <div>
                             <p className="text-blue-400 text-sm font-bold mb-1">Radio de Afectación</p>
                             <p className="text-slate-400 text-xs font-medium leading-relaxed">
