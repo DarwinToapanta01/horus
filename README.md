@@ -1,446 +1,342 @@
-# 🗺️ HORUS - Plataforma de Vigilancia Ciudadana Colaborativa
+# HORUS - Plataforma de Vigilancia Ciudadana Colaborativa
 
-![Estado](https://img.shields.io/badge/Estado-En%20Producci%C3%B3n-success)
-![Licencia](https://img.shields.io/badge/Licencia-MIT-blue)
+![Estado](https://img.shields.io/badge/Estado-Local%20%2F%20Docker-blue)
 ![Laravel](https://img.shields.io/badge/Laravel-12.0-red)
 ![React](https://img.shields.io/badge/React-19.0-blue)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Latest-blue)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED)
+![PHP](https://img.shields.io/badge/PHP-8.3-777BB4)
 
-**HORUS** es una aplicación web distribuida que permite a los ciudadanos reportar, validar y consultar zonas de peligro en su ciudad mediante un sistema de verificación comunitaria basado en proximidad geográfica.
+**HORUS** es una aplicación web de reportes ciudadanos geolocalizados que permite a los ciudadanos reportar, validar y comentar zonas de peligro en su ciudad mediante un sistema de verificación comunitaria basado en proximidad geográfica.
 
 El nombre hace referencia al dios egipcio Horus, conocido como "el ojo que todo lo ve", simbolizando la visión colectiva de la comunidad sobre su entorno urbano.
 
----
-
-## 🌐 Demo en Vivo
-
-- **Frontend:** [https://horus-client-five.vercel.app](https://horus-client-five.vercel.app)
-- **API Backend:** [https://web-horus-api.up.railway.app](https://web-horus-api.up.railway.app)
-- **Documentación API:** [https://web-horus-api.up.railway.app/api](https://web-horus-api.up.railway.app/api)
+> **Materia:** Sistemas Distribuidos — Parcial 3
+> **Universidad:** Universidad de las Fuerzas Armadas ESPE
+> **Autor:** Darwin Toapanta
 
 ---
 
-## 📋 Tabla de Contenidos
+## Tabla de Contenidos
 
-- [Características Principales](#-características-principales)
-- [Arquitectura del Sistema](#-arquitectura-del-sistema)
-- [Tecnologías Utilizadas](#-tecnologías-utilizadas)
-- [Instalación Local](#-instalación-local)
-- [Estructura del Proyecto](#-estructura-del-proyecto)
-- [Variables de Entorno](#-variables-de-entorno)
-- [Despliegue en Producción](#-despliegue-en-producción)
-- [Roadmap](#-roadmap)
-- [Contribuir](#-contribuir)
-- [Licencia](#-licencia)
-- [Autor](#-autor)
-
----
-
-## ✨ Características Principales
-
-### 🔐 Autenticación y Seguridad
-- Registro e inicio de sesión con **Laravel Sanctum** (autenticación stateless con tokens Bearer)
-- Recuperación de contraseña por correo electrónico con clave temporal
-- Cambio de contraseña para usuarios autenticados
-- Cifrado de contraseñas con **bcrypt**
-- Configuración **CORS** para proteger el backend
-
-### 🗺️ Reportes Geolocalizados
-- Creación de reportes con coordenadas geográficas (latitud/longitud)
-- Ajuste de nivel de peligro mediante slider dinámico (0-100%)
-- Radio de influencia configurable (200m por defecto)
-- Mapa interactivo con **Leaflet.js** y tiles en modo oscuro
-- Círculos de colores dinámicos según nivel de riesgo:
-  - 🟢 Verde: Bajo riesgo (<40%)
-  - 🟠 Naranja: Riesgo moderado (40-70%)
-  - 🔴 Rojo: Alto riesgo (≥70%)
-
-### 🗳️ Validación Comunitaria
-- Sistema de votación **SÍ/NO** para verificar reportes
-- Validación de proximidad con **fórmula de Haversine** (radio de 20 km)
-- Prevención de votos duplicados (restricción única por usuario y reporte)
-- Reportes verificados automáticamente con **3 votos positivos**
-- Bloqueo de contenido hasta alcanzar verificación comunitaria
-
-### 💬 Muro de Comentarios
-- Comentarios anidados con soporte para respuestas (parent_id)
-- Acceso exclusivo a reportes verificados
-- Identificación de autores con nombre de usuario
-- Fecha de publicación en cada comentario
-
-### 📱 Interfaz Responsive
-- Diseño adaptable para móviles, tablets y escritorio
-- Iconografía SVG moderna y profesional
-- Tema oscuro optimizado para legibilidad
-- Framework CSS: **Tailwind CSS** con utilidades responsive
+- [Arquitectura de Microservicios](#arquitectura-de-microservicios)
+- [Microservicios](#microservicios)
+- [Tecnologías](#tecnologías)
+- [Requisitos Previos](#requisitos-previos)
+- [Instalación y Ejecución Local](#instalación-y-ejecución-local)
+- [Puertos del Sistema](#puertos-del-sistema)
+- [Variables de Entorno](#variables-de-entorno)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Endpoints de la API](#endpoints-de-la-api)
+- [Características Principales](#características-principales)
+- [Autor](#autor)
 
 ---
 
-## 🏗️ Arquitectura del Sistema
+## Arquitectura de Microservicios
 
-HORUS implementa una **arquitectura de microservicios distribuidos** con servicios independientes que se comunican mediante protocolos estándar de internet.
+HORUS migró de un monolito Laravel a una **arquitectura de microservicios distribuidos**, donde cada dominio del negocio opera como un servicio independiente con su propia base de datos PostgreSQL.
 
 ```
-┌──────────────────────────────────────┐
-│   USUARIO (Navegador / Móvil)        │
-└─────────────────┬────────────────────┘
-                  │
-                  ▼
-┌──────────────────────────────────────┐
-│   horus-client (Vercel)              │
-│   React 19 + Vite + Leaflet          │
-│   https://horus-client-five.vercel.app
-└─────────────────┬────────────────────┘
-                  │ HTTPS REST
-                  │ Bearer Token
-                  ▼
-┌──────────────────────────────────────┐
-│   horus-api (Railway)                │
-│   Laravel 12 + Sanctum + PostgreSQL  │
-│   https://web-horus-api.up.railway.app
-└─────────────────┬────────────────────┘
-                  │ SQL
-                  ▼
-┌──────────────────────────────────────┐
-│   PostgreSQL (Railway)               │
-│   users, reports, votes, comments    │
-└──────────────────────────────────────┘
-                  ▲
-                  │ WebSocket (trabajo futuro)
-                  │
-┌──────────────────────────────────────┐
-│   horus-realtime (Railway)           │
-│   Node.js + Socket.io [PLANIFICADO]  │
-└──────────────────────────────────────┘
+Frontend React (localhost:5173)
+         │
+         ▼
+ ┌──────────────────┐
+ │   API Gateway    │  :8000  ← único punto de entrada
+ │  (Laravel 12)    │         valida token, inyecta X-User-Id
+ └──┬───┬───┬───┬───┘
+    │   │   │   │
+    ▼   ▼   ▼   ▼
+ ┌──────────────────────────────────────────────┐
+ │  auth      reports    votes     comments     │
+ │  :8001     :8002      :8003     :8004        │
+ │    │           │         │          │        │
+ │ auth_db  reports_db  votes_db  comments_db  │
+ │  :5433     :5434      :5435      :5436       │
+ └──────────────────────────────────────────────┘
+          (PostgreSQL 15 — una BD por servicio)
 ```
 
-### Servicios
+### Patrón de comunicación entre servicios
 
-| Servicio | Tecnología | Estado | URL |
-|----------|-----------|--------|-----|
-| **horus-client** | React 19 + Vite | ✅ Producción | [Ver Demo](https://horus-client-five.vercel.app) |
-| **horus-api** | Laravel 12 + PostgreSQL | ✅ Producción | [Ver API](https://web-horus-api.up.railway.app) |
-| **horus-realtime** | Node.js + Socket.io | ⚠️ Trabajo Futuro | - |
+- **Gateway → auth-service:** valida el token Bearer antes de enrutar cualquier petición protegida.
+- **reports-service → votes-service:** consulta el conteo de votos de cada reporte al listar.
+- **votes-service → reports-service:** obtiene las coordenadas del reporte para calcular distancia (Haversine).
+- **comments-service → reports-service:** verifica que el reporte exista antes de crear un comentario.
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Microservicios
 
-### Frontend (horus-client)
-- **React 19.2.0** - Biblioteca UI con hooks modernos
-- **Vite 7.2.4** - Build tool de nueva generación
-- **React Router 7.13.0** - Enrutamiento SPA
-- **Leaflet 1.9.4** - Mapas interactivos
-- **React-Leaflet 5.0** - Componentes React para Leaflet
-- **Axios 1.13.4** - Cliente HTTP con interceptores
-- **Tailwind CSS 4.1.18** - Framework CSS utility-first
+| Servicio | Puerto | Base de Datos | Responsabilidad |
+|---|---|---|---|
+| **api-gateway** | 8000 | — | Enrutamiento, autenticación centralizada |
+| **auth-service** | 8001 | horus_auth_db (5433) | Usuarios, tokens Sanctum, recuperación de contraseña |
+| **reports-service** | 8002 | horus_reports_db (5434) | Reportes geolocalizados |
+| **votes-service** | 8003 | horus_votes_db (5435) | Votos con validación de distancia (Haversine) |
+| **comments-service** | 8004 | horus_comments_db (5436) | Comentarios anidados |
 
-### Backend (horus-api)
-- **Laravel 12.0** - Framework PHP moderno
-- **PHP 8.2** - Lenguaje del servidor
-- **Laravel Sanctum 4.0** - Autenticación con tokens
-- **PostgreSQL** - Base de datos relacional
-- **Eloquent ORM** - Abstracción de base de datos
-- **Laravel Mail** - Envío de correos electrónicos
+---
+
+## Tecnologías
+
+### Backend (microservicios)
+- **Laravel 12** — Framework PHP para cada microservicio
+- **PHP 8.3** — Lenguaje del servidor
+- **Laravel Sanctum 4** — Autenticación stateless con tokens Bearer
+- **PostgreSQL 15** — Una base de datos por microservicio
+- **Laravel Http Client** — Comunicación REST entre servicios
+
+### Frontend
+- **React 19** — Biblioteca UI
+- **Vite 7** — Build tool
+- **React Router 7** — Enrutamiento SPA
+- **Leaflet + React-Leaflet** — Mapas interactivos
+- **Axios** — Cliente HTTP con interceptores
+- **Tailwind CSS 4** — Framework CSS
 
 ### Infraestructura
-- **Vercel** - Hosting del frontend (CDN global)
-- **Railway** - Hosting del backend y PostgreSQL
-- **GitHub** - Control de versiones
-- **Git** - Sistema de control de versiones distribuido
-
-### Trabajo Futuro (horus-realtime)
-- **Node.js** - Entorno de ejecución JavaScript
-- **Express** - Framework web minimalista
-- **Socket.io** - Comunicación WebSocket bidireccional
-- **socket.io-client** - Cliente WebSocket para React
+- **Docker** — Contenedores para cada servicio
+- **Docker Compose** — Orquestación de los 9 contenedores
+- **GitHub** — Control de versiones
 
 ---
 
-## 🚀 Instalación Local
+## Requisitos Previos
 
-### Prerrequisitos
+Solo necesitas tener instalado:
 
-- **PHP 8.2+** con extensiones: pdo, pdo_pgsql, mbstring, xml, tokenizer, ctype, fileinfo, bcmath
-- **Composer 2.0+**
-- **Node.js 18+** y **npm 9+**
-- **PostgreSQL 14+**
-- **Git**
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (incluye Docker Compose)
+- [Node.js 18+](https://nodejs.org/) (solo para el frontend)
+- [Git](https://git-scm.com/)
 
-### 1️⃣ Clonar el repositorio
+No necesitas PHP, Composer ni PostgreSQL instalados localmente — Docker los provee.
+
+---
+
+## Instalación y Ejecución Local
+
+### 1. Clonar el repositorio
 
 ```bash
-# Opción A: Clonar todo el proyecto
 git clone https://github.com/DarwinToapanta01/horus.git
 cd horus
-
-# Opción B: Clonar servicios individuales
-git clone https://github.com/DarwinToapanta01/horus-api.git
-git clone https://github.com/DarwinToapanta01/horus-client.git
 ```
 
-### 2️⃣ Configurar el Backend (horus-api)
+### 2. Levantar todos los microservicios con Docker
 
 ```bash
-cd horus-api
-
-# Instalar dependencias de PHP
-composer install
-
-# Copiar archivo de configuración
-cp .env.example .env
-
-# Generar clave de aplicación
-php artisan key:generate
-
-# Configurar la base de datos en .env
-# DB_CONNECTION=pgsql
-# DB_HOST=127.0.0.1
-# DB_PORT=5432
-# DB_DATABASE=horus
-# DB_USERNAME=tu_usuario
-# DB_PASSWORD=tu_password
-
-# Ejecutar migraciones
-php artisan migrate
-
-# Iniciar servidor de desarrollo
-php artisan serve
-# Backend corriendo en http://localhost:8000
+docker-compose up --build
 ```
 
-### 3️⃣ Configurar el Frontend (horus-client)
+Este comando:
+- Descarga las imágenes base (PHP 8.3 + PostgreSQL 15)
+- Instala dependencias de Composer en cada servicio
+- Genera las APP_KEY de cada servicio
+- Ejecuta las migraciones en cada base de datos
+- Levanta los 9 contenedores (5 servicios + 4 BDs)
+
+> La primera ejecución tarda varios minutos por la descarga de imágenes. Las siguientes son mucho más rápidas.
+
+### 3. Levantar el frontend
+
+En una terminal separada:
 
 ```bash
 cd horus-client
-
-# Instalar dependencias de Node
 npm install
-
-# Copiar archivo de configuración
-cp .env.example .env
-
-# Configurar la URL del backend en .env
-# VITE_API_URL=http://localhost:8000/api
-
-# Iniciar servidor de desarrollo
 npm run dev
-# Frontend corriendo en http://localhost:5173
 ```
 
-### 4️⃣ Acceder a la aplicación
+### 4. Abrir la aplicación
 
-Abre tu navegador en `http://localhost:5173`
+```
+http://localhost:5173
+```
+
+### Detener el sistema
+
+```bash
+docker-compose down
+```
+
+Para detener y eliminar también los volúmenes (borra los datos de las BDs):
+
+```bash
+docker-compose down -v
+```
 
 ---
 
-## 📁 Estructura del Proyecto
+## Puertos del Sistema
+
+| Servicio | URL local | Descripción |
+|---|---|---|
+| Frontend | http://localhost:5173 | Aplicación React |
+| API Gateway | http://localhost:8000 | Entrada única de la API |
+| auth-service | http://localhost:8001 | (directo, solo desarrollo) |
+| reports-service | http://localhost:8002 | (directo, solo desarrollo) |
+| votes-service | http://localhost:8003 | (directo, solo desarrollo) |
+| comments-service | http://localhost:8004 | (directo, solo desarrollo) |
+| horus_auth_db | localhost:5433 | PostgreSQL — usuarios |
+| horus_reports_db | localhost:5434 | PostgreSQL — reportes |
+| horus_votes_db | localhost:5435 | PostgreSQL — votos |
+| horus_comments_db | localhost:5436 | PostgreSQL — comentarios |
+
+### Conectar las BDs en pgAdmin
+
+Crea una conexión por cada base de datos:
+
+| Campo | Valor |
+|---|---|
+| Host | `localhost` |
+| Usuario | `postgres` |
+| Contraseña | `1234` |
+| Puerto | Ver tabla de puertos arriba |
+
+---
+
+## Variables de Entorno
+
+Cada microservicio tiene su propio `.env`. Los valores críticos son inyectados por Docker Compose y no necesitan modificarse para el entorno local.
+
+### Frontend (horus-client/.env)
+
+```env
+VITE_API_URL=http://localhost:8000/api
+```
+
+### Ejemplo — auth-service/.env
+
+```env
+APP_NAME=Horus-Auth
+APP_PORT=8001
+DB_CONNECTION=pgsql
+DB_HOST=auth_db        # nombre del contenedor Docker
+DB_PORT=5432
+DB_DATABASE=horus_auth_db
+DB_USERNAME=postgres
+DB_PASSWORD=1234
+CORS_ALLOWED_ORIGINS=http://localhost:5173
+```
+
+> Los demás servicios siguen la misma estructura cambiando el nombre de la BD y el host.
+
+---
+
+## Estructura del Proyecto
 
 ```
-horus/
+horus-project/
 │
-├── horus-api/                 # Backend Laravel
-│   ├── app/
-│   │   ├── Http/
-│   │   │   └── Controllers/   # Controladores API
-│   │   └── Models/            # Modelos Eloquent
-│   ├── config/
-│   │   ├── cors.php           # Configuración CORS
-│   │   └── sanctum.php        # Configuración Sanctum
-│   ├── database/
-│   │   └── migrations/        # Migraciones de BD
-│   ├── routes/
-│   │   └── api.php            # Rutas de la API
-│   ├── .env.example
-│   ├── Procfile               # Configuración Railway
-│   ├── nixpacks.toml          # Build config Railway
-│   └── composer.json
+├── docker-compose.yml          ← orquesta los 9 contenedores
+├── .gitignore
 │
-├── horus-client/              # Frontend React
-│   ├── src/
-│   │   ├── api/
-│   │   │   └── axios.js       # Configuración Axios
-│   │   ├── views/             # Vistas React
-│   │   │   ├── Auth/          # Login, Registro
-│   │   │   ├── MapaSeguridad/ # Mapa interactivo
-│   │   │   ├── ReportarZona/  # Crear reportes
-│   │   │   ├── Votacion/      # Sistema de votos
-│   │   │   └── Comentarios/   # Muro de comentarios
-│   │   ├── App.jsx            # Rutas principales
-│   │   └── main.jsx           # Entry point
-│   ├── public/
-│   ├── .env.example
-│   ├── vercel.json            # Configuración Vercel
-│   ├── vite.config.js         # Configuración Vite
-│   └── package.json
+├── api-gateway/                ← Puerto 8000 — entrada única
+│   ├── app/Http/Controllers/Api/GatewayController.php
+│   ├── app/Http/Middleware/GatewayAuth.php
+│   ├── config/services.php     ← URLs internas de cada servicio
+│   ├── routes/api.php
+│   └── Dockerfile
 │
-└── horus-realtime/            # WebSockets [TRABAJO FUTURO]
+├── auth-service/               ← Puerto 8001 — autenticación
+│   ├── app/Http/Controllers/Api/AuthController.php
+│   ├── app/Models/User.php
+│   ├── app/Mail/RecuperarPasswordMail.php
+│   ├── database/migrations/
+│   ├── routes/api.php
+│   └── Dockerfile
+│
+├── reports-service/            ← Puerto 8002 — reportes
+│   ├── app/Http/Controllers/Api/ReportController.php
+│   ├── app/Models/Report.php
+│   ├── database/migrations/
+│   ├── routes/api.php
+│   └── Dockerfile
+│
+├── votes-service/              ← Puerto 8003 — votos + Haversine
+│   ├── app/Http/Controllers/Api/VoteController.php
+│   ├── app/Models/Vote.php
+│   ├── database/migrations/
+│   ├── routes/api.php
+│   └── Dockerfile
+│
+├── comments-service/           ← Puerto 8004 — comentarios
+│   ├── app/Http/Controllers/Api/CommentController.php
+│   ├── app/Models/Comment.php
+│   ├── database/migrations/
+│   ├── routes/api.php
+│   └── Dockerfile
+│
+└── horus-client/               ← Frontend React + Vite
     ├── src/
-    │   └── server.js          # Servidor Socket.io
-    ├── .env.example
+    │   ├── api/axios.js
+    │   ├── views/
+    │   └── components/
+    ├── .env
     └── package.json
 ```
 
 ---
 
-## 🔑 Variables de Entorno
+## Endpoints de la API
 
-### Backend (horus-api/.env)
+Todos los endpoints se consumen a través del **API Gateway en `http://localhost:8000`**.
 
-```env
-# Aplicación
-APP_NAME=Horus
-APP_ENV=local
-APP_KEY=base64:GENERA_CON_php_artisan_key:generate
-APP_DEBUG=true
-APP_URL=http://localhost:8000
+### Públicos (sin token)
 
-# Base de datos
-DB_CONNECTION=pgsql
-DB_HOST=127.0.0.1
-DB_PORT=5432
-DB_DATABASE=horus
-DB_USERNAME=postgres
-DB_PASSWORD=tu_password
+| Método | Ruta | Descripción |
+|---|---|---|
+| `POST` | `/api/register` | Registrar nuevo usuario |
+| `POST` | `/api/login` | Iniciar sesión — retorna token Bearer |
+| `POST` | `/api/forgot-password` | Enviar contraseña temporal por email |
 
-# CORS
-CORS_ALLOWED_ORIGINS=http://localhost:5173
+### Protegidos (`Authorization: Bearer <token>`)
 
-# Sesiones y caché
-SESSION_DRIVER=database
-CACHE_STORE=database
-QUEUE_CONNECTION=database
-
-# Sanctum
-SANCTUM_STATEFUL_DOMAINS=localhost:5173
-SESSION_DOMAIN=localhost
-```
-
-### Frontend (horus-client/.env)
-
-```env
-# URL del backend
-VITE_API_URL=http://localhost:8000/api
-```
-
-### Producción (Railway/Vercel)
-
-**Backend en Railway:**
-```env
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://web-horus-api.up.railway.app
-CORS_ALLOWED_ORIGINS=https://horus-client-five.vercel.app
-DB_HOST=${{Postgres.PGHOST}}
-DB_PORT=${{Postgres.PGPORT}}
-DB_DATABASE=${{Postgres.PGDATABASE}}
-DB_USERNAME=${{Postgres.PGUSER}}
-DB_PASSWORD=${{Postgres.PGPASSWORD}}
-```
-
-**Frontend en Vercel:**
-```env
-VITE_API_URL=https://web-horus-api.up.railway.app/api
-```
+| Método | Ruta | Descripción |
+|---|---|---|
+| `GET` | `/api/user` | Datos del usuario autenticado |
+| `GET` | `/api/reports` | Listar reportes activos con votos |
+| `POST` | `/api/reports` | Crear nuevo reporte |
+| `GET` | `/api/reports/{id}` | Detalle de un reporte |
+| `POST` | `/api/votes` | Votar (valida distancia ≤ 20 km) |
+| `POST` | `/api/change-password` | Cambiar contraseña |
+| `GET` | `/api/reports/{id}/comments` | Comentarios de un reporte |
+| `POST` | `/api/comments` | Crear comentario o respuesta |
 
 ---
 
-## 🌍 Despliegue en Producción
+## Características Principales
 
-### Backend en Railway
+### Autenticación
+- Registro e inicio de sesión con tokens Bearer (Laravel Sanctum)
+- Recuperación de contraseña por correo electrónico con clave temporal
+- Cifrado de contraseñas con bcrypt
 
-1. Crear cuenta en [Railway.app](https://railway.app)
-2. Conectar con GitHub
-3. Crear proyecto desde repositorio `horus-api`
-4. Agregar servicio PostgreSQL
-5. Configurar variables de entorno (ver sección anterior)
-6. Railway desplegará automáticamente
+### Reportes Geolocalizados
+- Coordenadas geográficas (latitud/longitud), radio de impacto (100–5000 m) y nivel de peligro (0–100)
+- Mapa interactivo con Leaflet.js en modo oscuro
+- Círculos de colores según nivel de riesgo (verde / naranja / rojo)
+- Los reportes expiran automáticamente a las 48 horas
 
-**Archivos necesarios:**
-- `Procfile` - Define el comando de inicio
-- `nixpacks.toml` - Configuración de build
+### Validación Comunitaria
+- Votos de confirmación o rechazo por reporte
+- Validación de proximidad con **fórmula de Haversine** (máximo 20 km)
+- Un usuario = un voto por reporte (restricción a nivel de base de datos)
 
-### Frontend en Vercel
-
-1. Crear cuenta en [Vercel.com](https://vercel.com)
-2. Importar repositorio `horus-client`
-3. Configurar variable `VITE_API_URL`
-4. Vercel desplegará automáticamente
-
-**Archivo necesario:**
-- `vercel.json` - Rewrites para SPA
+### Comentarios
+- Comentarios anidados con soporte para respuestas (campo `parent_id`)
+- Ordenados del más reciente al más antiguo
 
 ---
 
-## 🗺️ Roadmap
-
-### ✅ Completado (v1.0)
-- [x] Sistema de autenticación con tokens Bearer
-- [x] Creación de reportes geolocalizados
-- [x] Mapa interactivo con Leaflet
-- [x] Sistema de votación con validación de distancia (Haversine)
-- [x] Muro de comentarios anidados
-- [x] Diseño responsive para móviles
-- [x] Deploy en producción (Vercel + Railway)
-- [x] Documentación completa
-
-### 🚧 En Desarrollo (v1.1)
-- [ ] Servicio horus-realtime con WebSockets
-- [ ] Actualización del mapa en tiempo real
-- [ ] Notificaciones push para nuevos reportes cercanos
-- [ ] Sistema de reputación de usuarios
-- [ ] Paginación de reportes y comentarios
-
-### 🔮 Futuro (v2.0)
-- [ ] Panel de administración
-- [ ] Estadísticas y gráficos de seguridad
-- [ ] Integración con autoridades locales
-- [ ] API pública para terceros
-- [ ] Sistema de alertas automáticas
-
----
-
-## 📜 Licencia
-
-Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para más detalles.
-
----
-
-## 👨‍💻 Autor
+## Autor
 
 **Darwin Toapanta**
 
-- Universidad: Universidad de las Fuerzas Armadas ESPE
-- Carrera: Ingeniería en Tecnologías de la Información
-- Materia: Aplicaciones Distribuidas
-- Docente: Ing. Kevin Chuquitarco
-- Año: 2026
-
----
-
-## 📧 Contacto
-
-Para preguntas, sugerencias o reportar problemas:
-
+- **Universidad:** Universidad de las Fuerzas Armadas ESPE
+- **Carrera:** Ingeniería en Tecnologías de la Información
+- **Materia:** Sistemas Distribuidos
+- **Docente:** Ing. Kevin Chuquitarco
+- **Año:** 2026
 - **Email:** datoapanta11@espe.edu.ec
-
----
-
-## 📚 Documentación Adicional
-
-- [Laravel Documentation](https://laravel.com/docs)
-- [React Documentation](https://react.dev)
-- [Leaflet Documentation](https://leafletjs.com)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Railway Documentation](https://docs.railway.app)
-- [Vercel Documentation](https://vercel.com/docs)
-
----
-
-<div align="center">
-
-**Hecho por Darwin Toapanta**
-
-⭐ Si este proyecto te fue útil, considera darle una estrella en GitHub
-
-</div>
