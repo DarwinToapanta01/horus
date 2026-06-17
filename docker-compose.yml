@@ -1,0 +1,188 @@
+# ================================================================
+# HORUS — Arquitectura de Microservicios
+# ================================================================
+#
+#  Cliente (Frontend :5173)
+#         │
+#  api-gateway  :8000   ← único punto de entrada
+#    ├── auth-service    :8001  → horus_auth_db
+#    ├── reports-service :8002  → horus_reports_db
+#    ├── votes-service   :8003  → horus_votes_db
+#    └── comments-service:8004  → horus_comments_db
+#
+# Iniciar todo: docker-compose up --build
+# ================================================================
+
+services:
+
+  auth_db:
+    image: postgres:15-alpine
+    container_name: horus_auth_db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: horus_auth_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "1234"
+    volumes:
+      - auth_db_data:/var/lib/postgresql/data
+    networks:
+      - horus_network
+
+  reports_db:
+    image: postgres:15-alpine
+    container_name: horus_reports_db
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: horus_reports_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "1234"
+    volumes:
+      - reports_db_data:/var/lib/postgresql/data
+    networks:
+      - horus_network
+
+  votes_db:
+    image: postgres:15-alpine
+    container_name: horus_votes_db
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: horus_votes_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "1234"
+    volumes:
+      - votes_db_data:/var/lib/postgresql/data
+    networks:
+      - horus_network
+
+  comments_db:
+    image: postgres:15-alpine
+    container_name: horus_comments_db
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_DB: horus_comments_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "1234"
+    volumes:
+      - comments_db_data:/var/lib/postgresql/data
+    networks:
+      - horus_network
+
+  # MICROSERVICIOS
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: horus_auth_service
+    ports:
+      - "8001:8000"
+    environment:
+      DB_HOST: auth_db
+      DB_PORT: 5432
+      DB_DATABASE: horus_auth_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: "1234"
+    depends_on:
+      - auth_db
+    restart: on-failure
+    networks:
+      - horus_network
+
+  reports-service:
+    build:
+      context: ./reports-service
+      dockerfile: Dockerfile
+    container_name: horus_reports_service
+    ports:
+      - "8002:8000"
+    environment:
+      DB_HOST: reports_db
+      DB_PORT: 5432
+      DB_DATABASE: horus_reports_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: "1234"
+      VOTES_SERVICE_URL: http://votes-service:8000
+    depends_on:
+      - reports_db
+      - votes-service
+    restart: on-failure
+    networks:
+      - horus_network
+
+  votes-service:
+    build:
+      context: ./votes-service
+      dockerfile: Dockerfile
+    container_name: horus_votes_service
+    ports:
+      - "8003:8000"
+    environment:
+      DB_HOST: votes_db
+      DB_PORT: 5432
+      DB_DATABASE: horus_votes_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: "1234"
+      REPORTS_SERVICE_URL: http://reports-service:8000
+    depends_on:
+      - votes_db
+    restart: on-failure
+    networks:
+      - horus_network
+
+  comments-service:
+    build:
+      context: ./comments-service
+      dockerfile: Dockerfile
+    container_name: horus_comments_service
+    ports:
+      - "8004:8000"
+    environment:
+      DB_HOST: comments_db
+      DB_PORT: 5432
+      DB_DATABASE: horus_comments_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: "1234"
+      REPORTS_SERVICE_URL: http://reports-service:8000
+    depends_on:
+      - comments_db
+      - reports-service
+    restart: on-failure
+    networks:
+      - horus_network
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: horus_api_gateway
+    ports:
+      - "8000:8000"
+    environment:
+      AUTH_SERVICE_URL:     http://auth-service:8000
+      REPORTS_SERVICE_URL:  http://reports-service:8000
+      VOTES_SERVICE_URL:    http://votes-service:8000
+      COMMENTS_SERVICE_URL: http://comments-service:8000
+    depends_on:
+      - auth-service
+      - reports-service
+      - votes-service
+      - comments-service
+    restart: on-failure
+    networks:
+      - horus_network
+
+# RED Y VOLÚMENES
+
+networks:
+  horus_network:
+    driver: bridge
+
+volumes:
+  auth_db_data:
+  reports_db_data:
+  votes_db_data:
+  comments_db_data:

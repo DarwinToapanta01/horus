@@ -1,0 +1,28 @@
+# Dependencias PHP (cada servicio las instala con composer install)
+**/vendor/
+
+# Dependencias Node (frontend)
+**/node_modules/
+
+# Variables de entorno con credenciales
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Archivos de caché de Laravel
+**/bootstrap/cache/*.php
+**/storage/framework/cache/**
+**/storage/framework/sessions/**
+**/storage/framework/views/**
+**/storage/logs/**
+
+# Archivos compilados del frontend
+**/dist/
+**/build/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Script de generación del informe (solo era de uso local)
+generar_informe.py
