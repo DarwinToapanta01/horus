@@ -11,10 +11,6 @@
 
 El nombre hace referencia al dios egipcio Horus, conocido como "el ojo que todo lo ve", simbolizando la visión colectiva de la comunidad sobre su entorno urbano.
 
-> **Materia:** Sistemas Distribuidos — Parcial 3
-> **Universidad:** Universidad de las Fuerzas Armadas ESPE
-> **Autor:** Darwin Toapanta
-
 ---
 
 ## Tabla de Contenidos
@@ -216,7 +212,7 @@ DB_HOST=auth_db        # nombre del contenedor Docker
 DB_PORT=5432
 DB_DATABASE=horus_auth_db
 DB_USERNAME=postgres
-DB_PASSWORD=1234
+DB_PASSWORD=****
 CORS_ALLOWED_ORIGINS=http://localhost:5173
 ```
 
@@ -333,10 +329,4 @@ Todos los endpoints se consumen a través del **API Gateway en `http://localhost
 ## Autor
 
 **Darwin Toapanta**
-
-- **Universidad:** Universidad de las Fuerzas Armadas ESPE
-- **Carrera:** Ingeniería en Tecnologías de la Información
-- **Materia:** Sistemas Distribuidos
-- **Docente:** Ing. Kevin Chuquitarco
-- **Año:** 2026
 - **Email:** datoapanta11@espe.edu.ec
